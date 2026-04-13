@@ -1,4 +1,4 @@
-CNIT 325 Team Project
+**CNIT 325 Team Project
 Darel Aradin, Ryan Hung, Linzzi Ji, Eunchae Jung, Priscilla Tam
 
 Project Overview:
