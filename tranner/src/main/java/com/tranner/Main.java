@@ -11,7 +11,9 @@ import java.awt.CardLayout;
 
 public class Main extends JFrame{
     private JPanel cardPanel; //initialize variables (private to ensure data protection)
-    private JPanel menuPanel, insertPanel, createUserProfilePanel, registrationPanel;
+    private mainMenu menuPanel;
+    private RegisterPanel registrationPanel;
+    private createProfilePanel createUserProfilePanel;
     //current user data
     private User currentUser;
     private Preference currUserPreference;
@@ -35,7 +37,7 @@ public class Main extends JFrame{
 
     private void makeMainMenuPanel(){ //helper function to help make main menu panel
         this.menuPanel = new mainMenu();
-        JButton RegisterButton = ((mainMenu) menuPanel).getRegisterButton();  // Get the register button from the mainPanel
+        JButton RegisterButton = menuPanel.getRegisterButton();  // Get the register button from the mainPanel
         RegisterButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Create your user profile, fill in profile & preference credentials");
             changeScreen("profile");
@@ -44,27 +46,39 @@ public class Main extends JFrame{
 
     private void makeProfilePanel() { //helper to help make main menu panel
         this.createUserProfilePanel = new createProfilePanel();
-        JButton submitProfileButton = ((createProfilePanel) createUserProfilePanel).getSubmitProfileButton();  // Get the submit button from the makeProfilePanel
+        JButton submitProfileButton = createUserProfilePanel.getSubmitProfileButton();  // Get the submit button from the makeProfilePanel
         submitProfileButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Profile creation successful, please fill in login credentials");
 
-            
             currUserPreference = new Preference();
-            currUserPreference.setBudget(((createProfilePanel) createUserProfilePanel).getBudget());
-            currUserPreference.setPlace(((createProfilePanel) createUserProfilePanel).getPlace());
-            currUserPreference.setTransport(((createProfilePanel) createUserProfilePanel).getTransportMode());
-            currUserPreference.setIntensity(((createProfilePanel) createUserProfilePanel).getIntensity());
+            currUserPreference.setBudget(createUserProfilePanel.getBudget());
+            currUserPreference.setPlace(createUserProfilePanel.getPlace());
+            currUserPreference.setTransport(createUserProfilePanel.getTransportMode());
+            currUserPreference.setIntensity(createUserProfilePanel.getIntensity());
 
-            currUserPreference.toString();
+            String preferencestatus = currUserPreference.toString();
+            System.out.println(preferencestatus);
             changeScreen("register");
         });
     }
 
     private void makeRegisterPanel() { //helper function to help make main menu panel
         this.registrationPanel = new RegisterPanel();
-        JButton submitCredentialsButton = ((RegisterPanel) registrationPanel).getSubmitLoginCredentials();  // Get the submit button from the makeProfilePanel
+        JButton submitCredentialsButton = registrationPanel.getSubmitLoginCredentials();  // Get the submit button from the makeProfilePanel
         submitCredentialsButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
-            System.out.println("user account successfully ");
+            System.out.println("user account successfully created");
+
+            currentUser = new User(
+                          registrationPanel.getLastName(),
+                          registrationPanel.getFirstName(),
+                          currUserPreference,
+                          registrationPanel.getUsername(),
+                          registrationPanel.getPassword()
+                          );
+            
+            String userstatus = currentUser.toString();
+            System.out.println(userstatus);
+
             changeScreen("main");
         });
     }
