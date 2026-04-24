@@ -1,4 +1,4 @@
-package com.tranner;
+package com.tranner.model.place;
 
 import java.time.*;
 import java.util.ArrayList;
