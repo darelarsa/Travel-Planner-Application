@@ -13,6 +13,7 @@ public class User extends Person {
     // --- Fields ---
  
     private final int userID;
+    private String username;
     private String password;
     private List<Person> companions;   // Non-user travel buddies
  
@@ -29,9 +30,10 @@ public class User extends Person {
      * @param preference     Initial travel preferences (may be null if not yet set)
      * @param password Pre-hashed password string (hashing done in UserService)
      */
-    public User(String lastName, String firstName, Preference preference, String password) {
+    public User(String lastName, String firstName, Preference preference, String username, String password) {
         super(lastName, firstName, preference);
         this.userID = nextUserId++;
+        this.username = username;
         this.password = password;
         this.companions = new ArrayList<>();
     }
@@ -44,12 +46,31 @@ public class User extends Person {
      * @param firstName      User's first name
      * @param password Pre-hashed password string
      */
-    public User(String lastName, String firstName, String password) {
-        this(lastName, firstName, null, password);
+    public User(String lastName, String firstName, String username, String password) {
+        this(lastName, firstName, null, username, password);
     }
  
     // --- Authentication ---
- 
+
+    /**
+     * Validates a candidate username against the stored one.
+     * 
+     * @param candidateUsername The username attempt
+     * @return true if the usernames match
+     */
+    public boolean verifyUsername(String candidateUsername) {
+        return username.equals(candidateUsername);
+    }
+
+    /**
+     * Updates the stored username.
+     *
+     * @param newUsername The new username to store
+     */
+    public void updateUsername(String newUsername) {
+        this.username = newUsername;
+    }
+
     /**
      * Validates a candidate password against the stored one.
      *
