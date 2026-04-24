@@ -3,36 +3,57 @@ package com.tranner.model.gui;
 import javax.swing.*;
 
 public class RegisterPanel extends JPanel {
-    private JLabel username, password, confirmPassword;
-    private JTextField usernameField, passwordField, confirmPasswordField;
-    private JButton submitLoginCredenntials;
+    private JLabel firstNameLabel, lastNameLabel;
+    private JLabel usernameLabel, passwordLabel;
+    private JTextField firstNameField, lastNameField;
+    private JTextField usernameField, passwordField;
+    private JButton submitLoginCredentials;
 
     public RegisterPanel() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // --- Username & Password ---
-        username = new JLabel("Username:");
+        firstNameLabel = new JLabel("First Name:");
+        firstNameField = new JTextField(20);
+
+        lastNameLabel = new JLabel("Last Name:");
+        lastNameField = new JTextField(20);
+
+        usernameLabel = new JLabel("Username:");
         usernameField = new JTextField(20);
 
-        password = new JLabel("Password:");
+        passwordLabel = new JLabel("Password:");
         passwordField = new JTextField(20);
 
-        confirmPassword = new JLabel("Confirm Password:");
-        confirmPasswordField = new JTextField(20);
+        submitLoginCredentials = new JButton("Submit Login Credentials");
 
-        submitLoginCredenntials = new JButton("Submit Login Credentials");
-
-        // Add components to the panel
-        this.add(username);
+        this.add(firstNameLabel);
+        this.add(firstNameField);
+        this.add(lastNameLabel);
+        this.add(lastNameField);
+        this.add(usernameLabel);
         this.add(usernameField);
-        this.add(password);
+        this.add(passwordLabel);
         this.add(passwordField);
-        this.add(confirmPassword);
-        this.add(confirmPasswordField);
-        this.add(submitLoginCredenntials);
+        this.add(submitLoginCredentials);
     }
 
     public JButton getSubmitLoginCredentials() {
-        return submitLoginCredenntials;
+        return submitLoginCredentials;
+    }
+
+    public String getFirstName() {
+        return firstNameField.getText().trim();
+    }
+
+    public String getLastName() {
+        return lastNameField.getText().trim();
+    }
+
+    public String getUsername() {
+        return usernameField.getText().trim();
+    }
+
+    public String getPassword() {
+        return passwordField.getText().trim();
     }
 }

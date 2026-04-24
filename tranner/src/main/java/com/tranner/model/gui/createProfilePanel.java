@@ -1,70 +1,38 @@
 package com.tranner.model.gui;
 
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
+import com.tranner.model.person.Preference;
 
-public class createProfilePanel extends JPanel{
-    private JLabel firstNameLabel;
-    private JLabel lastNameLabel;
-    private JLabel passwordLabel;
+public class createProfilePanel extends JPanel {
     private JLabel regPlaceLabel;
-
     private JLabel regBudgetLabel;
     private JLabel regTransportLabel;
     private JLabel regIntensityLabel;
-    private JTextField firstNameField;
-    private JTextField lastNameField;
-    private JTextField passwordField;
     private JTextField regPlaceField;
-    private JRadioButton budgetLow;
-    private JRadioButton budgetModerate;
-    private JRadioButton budgetHigh;
-    private JRadioButton budgetLuxury;
+    private JRadioButton budgetLow, budgetModerate, budgetHigh, budgetLuxury;
     private ButtonGroup budgetGroup;
-    private JRadioButton transportWalking;
-    private JRadioButton transportTransit;
-    private JRadioButton transportRideshare;
-    private JRadioButton transportCar;
-    private JRadioButton transportBike;
+    private JRadioButton transportWalking, transportTransit, transportRideshare,
+                         transportCar, transportBike;
     private ButtonGroup transportGroup;
-    private JRadioButton intensityRelaxed;
-    private JRadioButton intensityModerate;
-    private JRadioButton intensityActive;
-    private JRadioButton intensityExtreme;
+    private JRadioButton intensityRelaxed, intensityModerate, intensityActive, intensityExtreme;
     private ButtonGroup intensityGroup;
     private JButton submitProfileButton;
     private JButton backToLoginButton;
 
-    
-    public createProfilePanel()  {
+    public createProfilePanel() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        // --- Name & Password ---
-        firstNameLabel = new JLabel("First Name:");
-        firstNameField = new JTextField(20);
-
-        this.lastNameLabel = new JLabel("Last Name:");
-        this.lastNameField = new JTextField(20);
-
-        this.passwordLabel = new JLabel("Password:");
-        this.passwordField = new JTextField(20);
-
         // --- Place ---
-        this.regPlaceLabel = new JLabel("Destination:");
-        this.regPlaceField = new JTextField(20);
+        regPlaceLabel = new JLabel("Destination:");
+        regPlaceField = new JTextField(20);
 
         // --- Budget ---
-        this.regBudgetLabel = new JLabel("Budget:");
-        this.budgetLow      = new JRadioButton("Low");
-        this.budgetModerate = new JRadioButton("Moderate");
-        this.budgetHigh     = new JRadioButton("High");
-        this.budgetLuxury   = new JRadioButton("Luxury");
-        this.budgetGroup    = new ButtonGroup();
+        regBudgetLabel = new JLabel("Budget:");
+        budgetLow      = new JRadioButton("Low");
+        budgetModerate = new JRadioButton("Moderate");
+        budgetHigh     = new JRadioButton("High");
+        budgetLuxury   = new JRadioButton("Luxury");
+        budgetGroup    = new ButtonGroup();
         budgetGroup.add(budgetLow);
         budgetGroup.add(budgetModerate);
         budgetGroup.add(budgetHigh);
@@ -78,13 +46,13 @@ public class createProfilePanel extends JPanel{
         budgetPanel.add(budgetLuxury);
 
         // --- Transport ---
-        this.regTransportLabel  = new JLabel("Transport Mode:");
-        this.transportWalking  = new JRadioButton("Walking");
-        this.transportTransit  = new JRadioButton("Public Transit");
-        this.transportRideshare = new JRadioButton("Rideshare");
-        this.transportCar      = new JRadioButton("Rental Car");
-        this.transportBike     = new JRadioButton("Bicycle");
-        this.transportGroup    = new ButtonGroup();
+        regTransportLabel  = new JLabel("Transport Mode:");
+        transportWalking   = new JRadioButton("Walking");
+        transportTransit   = new JRadioButton("Public Transit");
+        transportRideshare = new JRadioButton("Rideshare");
+        transportCar       = new JRadioButton("Rental Car");
+        transportBike      = new JRadioButton("Bicycle");
+        transportGroup     = new ButtonGroup();
         transportGroup.add(transportWalking);
         transportGroup.add(transportTransit);
         transportGroup.add(transportRideshare);
@@ -100,12 +68,12 @@ public class createProfilePanel extends JPanel{
         transportPanel.add(transportBike);
 
         // --- Intensity ---
-        this.regIntensityLabel  = new JLabel("Trip Intensity:");
-        this.intensityRelaxed  = new JRadioButton("Relaxed");
-        this.intensityModerate = new JRadioButton("Moderate");
-        this.intensityActive   = new JRadioButton("Active");
-        this.intensityExtreme  = new JRadioButton("Extreme");
-        this.intensityGroup    = new ButtonGroup();
+        regIntensityLabel  = new JLabel("Trip Intensity:");
+        intensityRelaxed   = new JRadioButton("Relaxed");
+        intensityModerate  = new JRadioButton("Moderate");
+        intensityActive    = new JRadioButton("Active");
+        intensityExtreme   = new JRadioButton("Extreme");
+        intensityGroup     = new ButtonGroup();
         intensityGroup.add(intensityRelaxed);
         intensityGroup.add(intensityModerate);
         intensityGroup.add(intensityActive);
@@ -119,20 +87,14 @@ public class createProfilePanel extends JPanel{
         intensityPanel.add(intensityExtreme);
 
         // --- Buttons ---
-        this.submitProfileButton = new JButton("Submit Profile");
-        this.backToLoginButton    = new JButton("Back to Login");
+        submitProfileButton = new JButton("Submit Profile");
+        backToLoginButton   = new JButton("Back to Login");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(submitProfileButton);
         buttonPanel.add(backToLoginButton);
 
         // --- Assemble ---
-        this.add(firstNameLabel);
-        this.add(firstNameField);
-        this.add(lastNameLabel);
-        this.add(lastNameField);
-        this.add(passwordLabel);
-        this.add(passwordField);
         this.add(regPlaceLabel);
         this.add(regPlaceField);
         this.add(budgetPanel);
@@ -140,8 +102,45 @@ public class createProfilePanel extends JPanel{
         this.add(intensityPanel);
         this.add(buttonPanel);
     }
- 
+
     public JButton getSubmitProfileButton() {
         return submitProfileButton;
+    }
+
+    public JButton getBackToLoginButton() {
+        return backToLoginButton;
+    }
+
+    public String getPlace() {
+        return regPlaceField.getText().trim();
+    }
+
+    public Preference.Budget getBudget() {
+        if (budgetLow.isSelected())      return Preference.Budget.LOW;
+        if (budgetModerate.isSelected()) return Preference.Budget.MODERATE;
+        if (budgetHigh.isSelected())     return Preference.Budget.HIGH;
+        if (budgetLuxury.isSelected())   return Preference.Budget.LUXURY;
+        return null;
+    }
+
+    public Preference.TransportMode getTransportMode() {
+        if (transportWalking.isSelected())   return Preference.TransportMode.WALKING;
+        if (transportTransit.isSelected())   return Preference.TransportMode.PUBLIC_TRANSIT;
+        if (transportRideshare.isSelected()) return Preference.TransportMode.RIDESHARE;
+        if (transportCar.isSelected())       return Preference.TransportMode.RENTAL_CAR;
+        if (transportBike.isSelected())      return Preference.TransportMode.BICYCLE;
+        return null;
+    }
+
+    public Preference.Intensity getIntensity() {
+        if (intensityRelaxed.isSelected())  return Preference.Intensity.RELAXED;
+        if (intensityModerate.isSelected()) return Preference.Intensity.MODERATE;
+        if (intensityActive.isSelected())   return Preference.Intensity.ACTIVE;
+        if (intensityExtreme.isSelected())  return Preference.Intensity.EXTREME;
+        return null;
+    }
+
+    public Preference getPreference() {
+        return new Preference(getBudget(), getPlace(), getTransportMode(), getIntensity());
     }
 }

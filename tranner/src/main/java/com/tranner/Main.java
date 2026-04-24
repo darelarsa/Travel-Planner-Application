@@ -5,8 +5,7 @@ import javax.swing.*;
 import com.tranner.model.gui.RegisterPanel;
 import com.tranner.model.gui.createProfilePanel;
 import com.tranner.model.gui.mainMenu;
-
-//import com.tranner.model.person.*;
+import com.tranner.model.person.*;
 
 import java.awt.CardLayout;
 
@@ -14,8 +13,8 @@ public class Main extends JFrame{
     private JPanel cardPanel; //initialize variables (private to ensure data protection)
     private JPanel menuPanel, insertPanel, createUserProfilePanel, registrationPanel;
     //current user data
-    /*private User currentUser;
-    private Preference currUserPreference;*/
+    private User currentUser;
+    private Preference currUserPreference;
 
     public Main(){
         super();
@@ -48,6 +47,15 @@ public class Main extends JFrame{
         JButton submitProfileButton = ((createProfilePanel) createUserProfilePanel).getSubmitProfileButton();  // Get the submit button from the makeProfilePanel
         submitProfileButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Profile creation successful, please fill in login credentials");
+
+            
+            currUserPreference = new Preference();
+            currUserPreference.setBudget(((createProfilePanel) createUserProfilePanel).getBudget());
+            currUserPreference.setPlace(((createProfilePanel) createUserProfilePanel).getPlace());
+            currUserPreference.setTransport(((createProfilePanel) createUserProfilePanel).getTransportMode());
+            currUserPreference.setIntensity(((createProfilePanel) createUserProfilePanel).getIntensity());
+
+            currUserPreference.toString();
             changeScreen("register");
         });
     }
