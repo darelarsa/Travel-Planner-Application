@@ -13,4 +13,14 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+        <groupId>tranner</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.0</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/lib/json-simple-1.1.1.jar</systemPath>
+        </dependency>
+    </dependencies>
+
 </project>

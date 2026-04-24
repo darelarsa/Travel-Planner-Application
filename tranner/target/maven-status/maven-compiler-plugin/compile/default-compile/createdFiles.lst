@@ -1,0 +1,9 @@
+com\tranner\model\person\User.class
+com\tranner\model\person\Preference$TransportMode.class
+com\tranner\model\person\Preference$Intensity.class
+com\tranner\model\place\LocationInfo.class
+com\tranner\api\weatherApiClient.class
+com\tranner\model\person\Person.class
+com\tranner\model\person\Preference.class
+com\tranner\model\person\Preference$Budget.class
+com\tranner\Main.class
