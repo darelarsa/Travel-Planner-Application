@@ -3,6 +3,8 @@ package com.tranner.model.person;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.tranner.model.itinerary.Itinerary;
  
 /**
  * Represents a registered user of the travel planner application.
@@ -16,6 +18,7 @@ public class User extends Person {
     private String username;
     private String password;
     private List<Person> companions;   // Non-user travel buddies
+    private List<Itinerary> itineraries;   // Itineraries created by this user
  
     // --- Static ID counter (separate from Person's) ---
     private static int nextUserId = 1;
@@ -28,7 +31,8 @@ public class User extends Person {
      * @param lastName       User's last name
      * @param firstName      User's first name
      * @param preference     Initial travel preferences (may be null if not yet set)
-     * @param password Pre-hashed password string (hashing done in UserService)
+     * @param username       Unique username for login
+     * @param password       Password string (hashing done in UserService)
      */
     public User(String lastName, String firstName, Preference preference, String username, String password) {
         super(lastName, firstName, preference);
@@ -36,6 +40,7 @@ public class User extends Person {
         this.username = username;
         this.password = password;
         this.companions = new ArrayList<>();
+        this.itineraries = new ArrayList<>();
     }
  
     /**
@@ -44,10 +49,19 @@ public class User extends Person {
      *
      * @param lastName       User's last name
      * @param firstName      User's first name
-     * @param password Pre-hashed password string
+     * @param username       Unique username for login
+     * @param password       Password string
      */
     public User(String lastName, String firstName, String username, String password) {
         this(lastName, firstName, null, username, password);
+    }
+
+    // --- Getters ---
+    public String getUsername() {
+        return username;
+    }
+    public String getPassword() {
+        return password;
     }
  
     // --- Authentication ---
@@ -122,6 +136,32 @@ public class User extends Person {
         return Collections.unmodifiableList(companions);
     }
  
+    // --- Itinerary Management ---
+
+    /**
+     * Adds an itinerary to this user's list of created itineraries.
+     *
+     * @param itinerary The Itinerary to add
+     */
+    public void addItinerary(Itinerary itinerary) {
+        itineraries.add(itinerary);
+    }
+
+    /**
+     * Returns an unmodifiable view of the itineraries created by this user.
+     * Modifications must go through addItinerary.
+     * 
+     * @return An unmodifiable list of the user's itineraries
+     */
+    public List<Itinerary> getItineraries() {
+        return Collections.unmodifiableList(itineraries);
+    }
+
+    /**
+     * Removes an itinerary by its ID.
+     * @return
+     */
+
     /**
      * Returns the total party size: this user + all companions.
      */

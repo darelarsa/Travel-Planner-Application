@@ -1,9 +1,6 @@
 package com.tranner.network;
 
-import com.tranner.model.itinerary.Itinerary;
-import com.tranner.model.person.Person;
 import com.tranner.model.person.User;
-import com.tranner.model.person.Preference;
 
 import java.net.*;
 import java.io.*;
@@ -17,15 +14,16 @@ public class UserServer {
 
     // -- Fields --
 
-    private final Map<Integer, User> userStore;
-    private final Map<Integer, Itinerary> itineraryStore;
+    private final List<User> userStore;
     private ServerSocket serverSocket;
     private boolean isRunning;
 
     // -- Constructor --
+    
     public UserServer() {
-        this.userStore = new HashMap<>();
-        this.itineraryStore = new HashMap<>();
+        this.userStore = new ArrayList<>();
+        this.serverSocket = null;
+        this.isRunning = false;
     }
 
     /* Starts the user server */
@@ -37,8 +35,53 @@ public class UserServer {
 
             while (isRunning) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress());
-                // Handle client connection in a separate thread (not implemented here)
+                System.out.println("New client connected: " + clientSocket.getInetAddress());
+
+                try {
+                    ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+                    ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+
+                    // Read the request message from the client
+                    RequestMessage request = (RequestMessage) in.readObject();
+                    System.out.println("Received request: " + request.getType());
+
+                    // Process the request and generate a response
+                    if (request.getType() == RequestMessage.RequestType.LOGIN) {
+                        String username = request.getUsername();
+                        String password = request.getPassword();
+                        boolean foundUser = false;
+                        for (int i = 0; i < userStore.size(); i++) {
+                            User user = userStore.get(i);
+                            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                                out.writeObject(ResponseMessage.createSuccessResponse("Login successful", user));
+                                foundUser = true;
+                                break;
+                            }
+                        }
+                        if (!foundUser) {
+                            out.writeObject(ResponseMessage.createFailureResponse("Login failed: Invalid username or password"));
+                        }
+                    } else if (request.getType() == RequestMessage.RequestType.REGISTER) {
+                        User newUser = request.getNewUser();
+                        if (addUser(newUser)) {
+                            out.writeObject(ResponseMessage.createSuccessResponse("Registration successful", newUser));
+                        } else {
+                            out.writeObject(ResponseMessage.createFailureResponse("Registration failed: User already exists"));
+                        }
+                    } else if (request.getType() == RequestMessage.RequestType.LOGOUT) {
+                        // For simplicity, we just acknowledge the logout request
+                        out.writeObject(ResponseMessage.createSuccessResponse("Logout successful", null));
+                    } else {
+                        out.writeObject(ResponseMessage.createFailureResponse("Unknown request type"));
+                    }
+
+                    out.flush();
+
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } finally {
+                    clientSocket.close();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,10 +100,16 @@ public class UserServer {
     }
 
     public boolean addUser(User user) {
-        if (user == null || userStore.containsKey(user.getUserID())) {
+        if (user == null || userStore.contains(user)) {
             return false; // Invalid user or already exists
         }
-        userStore.put(user.getUserID(), user);
+        userStore.add(user);
         return true;
+    }
+
+    // main method for testing
+    public static void main(String[] args) {
+        UserServer server = new UserServer();
+        server.start();
     }
 }

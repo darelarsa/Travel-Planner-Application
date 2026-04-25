@@ -52,7 +52,6 @@ public class Main extends JFrame{
 
             currUserPreference = new Preference();
             currUserPreference.setBudget(createUserProfilePanel.getBudget());
-            currUserPreference.setPlace(createUserProfilePanel.getPlace());
             currUserPreference.setTransport(createUserProfilePanel.getTransportMode());
             currUserPreference.setIntensity(createUserProfilePanel.getIntensity());
 
