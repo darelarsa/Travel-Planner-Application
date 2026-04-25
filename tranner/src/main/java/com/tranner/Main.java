@@ -2,16 +2,16 @@ package com.tranner;
 
 import javax.swing.*;
 
-import com.tranner.model.gui.RegisterPanel;
-import com.tranner.model.gui.createProfilePanel;
-import com.tranner.model.gui.mainMenu;
+import com.tranner.gui.LoginPanel;
+import com.tranner.gui.RegisterPanel;
+import com.tranner.gui.createProfilePanel;
 import com.tranner.model.person.*;
 
 import java.awt.CardLayout;
 
 public class Main extends JFrame{
     private JPanel cardPanel; //initialize variables (private to ensure data protection)
-    private mainMenu menuPanel;
+    private LoginPanel loginPanel;
     private RegisterPanel registrationPanel;
     private createProfilePanel createUserProfilePanel;
     //current user data
@@ -26,7 +26,7 @@ public class Main extends JFrame{
         makeRegisterPanel();
 
         this.cardPanel = new JPanel(new CardLayout()); //make card panel & frame
-        cardPanel.add(menuPanel, "main");
+        cardPanel.add(loginPanel, "main");
         cardPanel.add(createUserProfilePanel, "profile");
         cardPanel.add(registrationPanel, "register");
         this.add(cardPanel);
@@ -36,8 +36,8 @@ public class Main extends JFrame{
     }
 
     private void makeMainMenuPanel(){ //helper function to help make main menu panel
-        this.menuPanel = new mainMenu();
-        JButton RegisterButton = menuPanel.getRegisterButton();  // Get the register button from the mainPanel
+        this.loginPanel = new LoginPanel();
+        JButton RegisterButton = loginPanel.getRegisterButton();  // Get the register button from the mainPanel
         RegisterButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Create your user profile, fill in profile & preference credentials");
             changeScreen("profile");

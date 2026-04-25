@@ -1,13 +1,13 @@
-package com.tranner.model.gui;
+package com.tranner.gui;
 
 import javax.swing.*;
 
-public class mainMenu extends JPanel{
+public class LoginPanel extends JPanel{
     private JButton loginButton, registerButton;
     private JTextField loginUsernameField, loginPasswordField;
     private JLabel loginlbl, passwordlbl, tempLogo;
 
-    public mainMenu(){
+    public LoginPanel(){
         //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.tempLogo = new JLabel("Tranner Logo Here");
 

@@ -17,7 +17,7 @@ public class Preference {
      * Approximate daily spending level.
      * Matches the project constraint that budget results are approximations.
      */
-    public enum Budget {
+    public enum Budget {        // Change them to numbers
         LOW,        // Hostels, street food, free attractions
         MODERATE,   // Mid-range hotels, casual dining, some paid attractions
         HIGH,       // Upscale hotels, fine dining, premium experiences

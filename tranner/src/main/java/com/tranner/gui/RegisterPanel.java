@@ -1,4 +1,4 @@
-package com.tranner.model.gui;
+package com.tranner.gui;
 
 import javax.swing.*;
 
