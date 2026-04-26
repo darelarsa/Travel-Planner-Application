@@ -11,17 +11,13 @@
 package com.tranner.Map;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.List;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 
 
 //Fetch the map
-public class MapApiClient {
+public class StaticMapApiClient {
     private static final String API_KEY = AppConfig.get("google.api.key");
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/staticmap";
 

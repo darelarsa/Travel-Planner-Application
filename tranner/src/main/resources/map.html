@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tranner Map</title>
+    <style>
+        html, body, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    alert("Map loading...");
+
+    window.onerror = function(msg, url, line, col, error) {
+
+    alert("JS ERROR: " + msg + " at line " + line);
+
+};
+    var markers = [];
+    var map;
+
+    function initMap() {
+        alert("initMap called");
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 41.8781, lng: -87.6298 },
+            zoom: 12
+        });
+        alert("Map initialized");
+    }
+
+    function setCity(lat, lng, zoom) {
+        map.setCenter({ lat: lat, lng: lng });
+        map.setZoom(zoom);
+        clearMarkers();
+    }
+
+    function addMarker(lat, lng, name, type) {
+        var color = markerColor(type);
+        var marker = new google.maps.Marker({
+            position: { lat: lat, lng: lng },
+            map: map,
+            title: name,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: color,
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 2
+            }
+        });
+
+        var infoWindow = new google.maps.InfoWindow({ content: name });
+
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
+            if (window.javaConnector) {
+                javaConnector.onMarkerClicked(name, type);
+            }
+        });
+
+        markers.push(marker);
+    }
+
+    function clearMarkers() {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        markers = [];
+    }
+
+    function drawRoute(pointsJson) {
+        var points = JSON.parse(pointsJson);
+        var path = new google.maps.Polyline({
+            path: points,
+            geodesic: true,
+            strokeColor: '#2196F3',
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+        });
+        path.setMap(map);
+    }
+
+    function markerColor(type) {
+        if (type === 'hotel')      return '#FF9800';
+        if (type === 'restaurant') return '#4CAF50';
+        return '#F44336';
+    }
+</script>
+
+<!-- Google Maps JS API key injected by Java at runtime -->
+<script id="gmaps-script"></script>
+</body>
+</html>

@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class PlacesApiClient {
     private static final String PLACES_URL =
             "https://places.googleapis.com/v1/places:searchText";
+
     private static final String FIELD_MASK =
             "places.displayName,places.formattedAddress,places.rating," +
                     "places.priceLevel,places.types,places.editorialSummary";
@@ -87,6 +88,7 @@ public class PlacesApiClient {
                 JSONParser parser = new JSONParser();
                 JSONObject root = (JSONObject) parser.parse(responseString);
                 JSONArray places = (JSONArray) root.get("places");
+
 
                 if (places == null) {
                     System.out.println("[MapClient] No places found.");
