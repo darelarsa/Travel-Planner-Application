@@ -133,20 +133,6 @@ public class createProfilePanel extends JPanel {
             }
         });
 
-        // Close other dropdowns when one opens
-        budgetDropdown.setOnOpen(() -> {
-            transportDropdown.close();
-            intensityDropdown.close();
-        });
-        transportDropdown.setOnOpen(() -> {
-            budgetDropdown.close();
-            intensityDropdown.close();
-        });
-        intensityDropdown.setOnOpen(() -> {
-            budgetDropdown.close();
-            transportDropdown.close();
-        });
-
         // ── Submit button ─────────────────────────────────────────────────────
         submitProfileButton = makeRoundedButton("Save Profile", FONT_BUTTON, Color.WHITE, BUTTON_BG);
 
