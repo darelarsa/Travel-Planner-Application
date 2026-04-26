@@ -24,12 +24,12 @@ public class PlacesApiClient {
 
     private static final String FIELD_MASK =
             "places.displayName,places.formattedAddress,places.rating," +
-                    "places.priceLevel,places.types,places.editorialSummary";
+                    "places.priceLevel,places.types,places.editorialSummary,places.location";
 
     private static final String API_KEY = AppConfig.get("google.api.key");
 
     public static List<JSONObject> searchAttraction(String city ){
-        return search ("Attraction is in " + city);
+        return search ("tourist attractions in " + city);
     }
     public static List<JSONObject> searchRestaurants(String city ){
         return search ("popular restaurants in " + city);
@@ -133,20 +133,51 @@ public class PlacesApiClient {
         return text != null ? text.toString() : "";
     }
 
-    public static void main(String[] args) {
-        System.out.println("Search Attractions in the city");
-        List<JSONObject> attractions = searchAttraction("Chicago");
-        if(attractions.isEmpty()){
-            System.out.println("No attractions found.");
-            return;
-        }
-        for (JSONObject attraction : attractions){
-            System.out.println("Attraction: " + getName(attraction));
-            System.out.println("Address: " + getAddress(attraction));
-            System.out.println("Rating: " + getRating(attraction));
-            System.out.println("Description: " + getDescription(attraction));
-            System.out.println("------");
+    //get latitude and longitude of the place
+    public static double getLat(JSONObject place) {
+        JSONObject location = (JSONObject) place.get("location");
+        if (location == null) return 0.0;
+        return ((Number) location.get("latitude")).doubleValue();
+    }
 
+    public static double getLng(JSONObject place) {
+        JSONObject location = (JSONObject) place.get("location");
+        if (location == null) return 0.0;
+        return ((Number) location.get("longitude")).doubleValue();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== ATTRACTIONS ===");
+        List<JSONObject> attractions = searchAttraction("Chicago");
+        if (attractions.isEmpty()) {
+            System.out.println("No attractions found.");
+        } else {
+            for (JSONObject p : attractions) {
+                System.out.println(getName(p) + " | lat=" + getLat(p) + " lng=" + getLng(p)
+                        + " | rating=" + getRating(p));
+            }
+        }
+
+        System.out.println("\n=== RESTAURANTS ===");
+        List<JSONObject> restaurants = searchRestaurants("Chicago");
+        if (restaurants.isEmpty()) {
+            System.out.println("No restaurants found.");
+        } else {
+            for (JSONObject p : restaurants) {
+                System.out.println(getName(p) + " | lat=" + getLat(p) + " lng=" + getLng(p)
+                        + " | rating=" + getRating(p));
+            }
+        }
+
+        System.out.println("\n=== HOTELS ===");
+        List<JSONObject> hotels = searchHotels("Chicago");
+        if (hotels.isEmpty()) {
+            System.out.println("No hotels found.");
+        } else {
+            for (JSONObject p : hotels) {
+                System.out.println(getName(p) + " | lat=" + getLat(p) + " lng=" + getLng(p)
+                        + " | rating=" + getRating(p));
+            }
         }
     }
 

@@ -43,24 +43,18 @@ public class MapViewClient extends JPanel{
             }
         });
 
-        String html = loadHtmlWithKey();
+        String html = loadHtml();
         engine.loadContent(html);
         fxPanel.setScene(new Scene(view));
     }
 
-    private String loadHtmlWithKey() {
+    private String loadHtml() {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("map.html")) {
             if (in == null) {
                 System.err.println("[MapWebView] map.html not found in resources.");
                 return "<html><body>map.html not found</body></html>";
             }
-            String html = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            String apiKey = AppConfig.get("google.api.key");
-            // Replace the empty script tag with the real Google Maps JS API loader
-            String scriptTag = "<script src=\"https://maps.googleapis.com/maps/api/js"
-                    + "?key=" + apiKey
-                    + "&callback=initMap\" async defer></script>";
-            return html.replace("<script id=\"gmaps-script\"></script>", scriptTag);
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             System.err.println("[MapWebView] Error loading map.html: " + e.getMessage());
             return "<html><body>Error loading map</body></html>";
@@ -101,32 +95,50 @@ public class MapViewClient extends JPanel{
 
     public static void main(String[] args) {
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-        // Must use SwingUtilities for Swing components
+
+        // Fetch real data from Places API before opening the window
+        System.out.println("[Test] Fetching places from API...");
+        List<org.json.simple.JSONObject> attractions = PlacesApiClient.searchAttraction("Chicago");
+        List<org.json.simple.JSONObject> hotels      = PlacesApiClient.searchHotels("Chicago");
+        List<org.json.simple.JSONObject> restaurants = PlacesApiClient.searchRestaurants("Chicago");
+        System.out.println("[Test] Got " + attractions.size() + " attractions, "
+                + hotels.size() + " hotels, " + restaurants.size() + " restaurants.");
+
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("MapWebView Test");
+            JFrame frame = new JFrame("MapViewClient Test");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(900, 600);
+
             MapViewClient mapView = new MapViewClient();
-            // Register click callback — prints to console when you click a marker
+
             mapView.getConnector().setOnMarkerClicked((name, type) -> {
                 System.out.println("[Test] Marker clicked: " + name + " (" + type + ")");
             });
+
             frame.add(mapView, BorderLayout.CENTER);
             frame.setVisible(true);
-            // Wait 3 seconds for the map to fully load, then add test markers
-            // (map.html needs time to load Google Maps JS from the internet)
+
+            // Wait for Leaflet map to finish loading, then add markers from API
             new Thread(() -> {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException ignored) {}
-                System.out.println("[Test] Adding test markers...");
+                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+
+                System.out.println("[Test] Adding markers from Places API...");
                 mapView.setCity(41.8781, -87.6298, 12);
-                mapView.addMarker(41.8827, -87.6233, "Millennium Park", "attraction");
-                mapView.addMarker(41.8796, -87.6237, "Art Institute of Chicago", "attraction");
-                mapView.addMarker(41.8917, -87.6086, "Navy Pier", "attraction");
-                mapView.addMarker(41.8788, -87.6359, "Marriott Chicago", "hotel");
-                mapView.addMarker(41.8827, -87.6318, "Lou Malnati's", "restaurant");
-                System.out.println("[Test] Done. Click a marker on the map to test the callback.");
+
+                for (org.json.simple.JSONObject p : attractions) {
+                    mapView.addMarker(PlacesApiClient.getLat(p), PlacesApiClient.getLng(p),
+                            PlacesApiClient.getName(p), "attraction");
+                }
+                for (org.json.simple.JSONObject p : hotels) {
+                    mapView.addMarker(PlacesApiClient.getLat(p), PlacesApiClient.getLng(p),
+                            PlacesApiClient.getName(p), "hotel");
+                }
+                for (org.json.simple.JSONObject p : restaurants) {
+                    mapView.addMarker(PlacesApiClient.getLat(p), PlacesApiClient.getLng(p),
+                            PlacesApiClient.getName(p), "restaurant");
+                }
+
+                System.out.println("[Test] Done. Click a marker to test the callback.");
             }).start();
         });
     }
