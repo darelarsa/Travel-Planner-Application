@@ -20,14 +20,19 @@ public class Weather {
      * Used to drive clothing suggestions and outdoor suitability checks.
      */
     public enum Condition {
-        SUNNY,
+        CLEAR_SKY,
         PARTLY_CLOUDY,
-        CLOUDY,
-        RAINY,
-        STORMY,
-        SNOWY,
         FOGGY,
-        WINDY,
+        DRIZZLE,
+        FREEZING_DRIZZLE,
+        RAIN,
+        FREEZING_RAIN,
+        SNOW,
+        SNOW_GRAINS,
+        RAIN_SHOWERS,
+        SNOW_SHOWERS,
+        THUNDERSTORM,
+        THUNDERSTORM_WITH_HAIL,
         UNKNOWN
     }
  
@@ -102,7 +107,7 @@ public class Weather {
      */
     private void generateClothingSuggestions() {
         clothingSuggestions.clear();
- 
+
         // --- Temperature-based suggestions ---
         if (tempCelsius >= 30) {
             clothingSuggestions.add("Wear lightweight, breathable clothing.");
@@ -116,40 +121,51 @@ public class Weather {
         } else {
             clothingSuggestions.add("Very cold — heavy coat, gloves, and thermal layers essential.");
         }
- 
+
         // --- Condition-based suggestions ---
         switch (condition) {
-            case RAINY ->
-                clothingSuggestions.add("Bring a waterproof jacket or umbrella — rain expected.");
-            case STORMY ->
-                clothingSuggestions.add("Severe weather — consider staying indoors and pack rain gear.");
-            case SNOWY ->
-                clothingSuggestions.add("Snow expected — waterproof boots and a heavy coat advised.");
+            case CLEAR_SKY ->
+                clothingSuggestions.add("Clear skies — sunglasses and sunscreen recommended.");
+            case PARTLY_CLOUDY ->
+                clothingSuggestions.add("Partly cloudy — a light layer in case it cools down.");
             case FOGGY ->
                 clothingSuggestions.add("Foggy conditions — wear bright or reflective clothing.");
-            case WINDY ->
-                clothingSuggestions.add("Windy — secure loose items and bring a windbreaker.");
-            case SUNNY ->
-                clothingSuggestions.add("Sunny skies — sunglasses and sunscreen recommended.");
-            default -> { 
-                // For UNKNOWN or unhandled conditions, we can optionally add a generic suggestion
+            case DRIZZLE ->
+                clothingSuggestions.add("Light drizzle expected — a water-resistant jacket should suffice.");
+            case FREEZING_DRIZZLE ->
+                clothingSuggestions.add("Freezing drizzle — waterproof boots and a warm coat advised. Watch for icy surfaces.");
+            case RAIN ->
+                clothingSuggestions.add("Rain expected — bring a waterproof jacket or umbrella.");
+            case FREEZING_RAIN ->
+                clothingSuggestions.add("Freezing rain — heavy waterproof gear essential. Extremely slippery conditions likely.");
+            case SNOW ->
+                clothingSuggestions.add("Snowfall expected — waterproof boots and a heavy coat advised.");
+            case SNOW_GRAINS ->
+                clothingSuggestions.add("Snow grains — waterproof footwear and warm layers recommended.");
+            case RAIN_SHOWERS ->
+                clothingSuggestions.add("Rain showers likely — keep an umbrella or rain jacket handy.");
+            case SNOW_SHOWERS ->
+                clothingSuggestions.add("Snow showers — waterproof outerwear and insulated boots recommended.");
+            case THUNDERSTORM ->
+                clothingSuggestions.add("Thunderstorm — consider staying indoors; pack full rain gear if going out.");
+            case THUNDERSTORM_WITH_HAIL ->
+                clothingSuggestions.add("Thunderstorm with hail — stay indoors if possible. Protective outerwear essential.");
+            default ->
                 clothingSuggestions.add("Check the detailed weather conditions and dress accordingly.");
-             }
         }
- 
+
         // --- UV Index warnings ---
         if (uvIndex >= 8) {
             clothingSuggestions.add("Very high UV index — apply SPF 50+ sunscreen and wear a hat.");
         } else if (uvIndex >= 6) {
             clothingSuggestions.add("High UV index — sunscreen and a hat are advised.");
         }
- 
+
         // --- Humidity suggestions ---
         if (humidityPercent >= 80) {
             clothingSuggestions.add("High humidity — moisture-wicking fabrics will be more comfortable.");
         }
     }
- 
     // --- Outdoor Suitability ---
  
     /**
@@ -160,8 +176,11 @@ public class Weather {
      * Criteria: not stormy, not heavy rain (>5mm), wind under 50kph.
      */
     public boolean isGoodForOutdoor() {
-        if (condition == Condition.STORMY) return false;
-        if (condition == Condition.RAINY && precipitationMm > 5.0) return false;
+        if (condition == Condition.THUNDERSTORM) return false;
+        if (condition == Condition.THUNDERSTORM_WITH_HAIL) return false;
+        if (condition == Condition.FREEZING_RAIN) return false;
+        if ((condition == Condition.RAIN || condition == Condition.RAIN_SHOWERS) 
+                && precipitationMm > 5.0) return false;
         if (windSpeedKph > 50.0) return false;
         return true;
     }
