@@ -25,7 +25,7 @@ public class PlacesApiClient {
             "places.displayName,places.formattedAddress,places.rating," +
                     "places.priceLevel,places.types,places.editorialSummary";
 
-    private static final String API_KEY = "AIzaSyAGClhtYj0IWnQq14SxA_DMRAnXXArcUhI";
+    private static final String API_KEY = AppConfig.get("google.api.key");
 
     public static List<JSONObject> searchAttraction(String city ){
         return search ("Attraction is in " + city);

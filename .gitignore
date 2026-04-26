@@ -1,2 +1,6 @@
 tranner/target/
 .DS_Store
+
+# API keys — never commit the real config file
+**/config.properties
+

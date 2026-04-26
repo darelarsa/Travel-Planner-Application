@@ -1,0 +1,3 @@
+# Copy this file to config.properties and fill in your real key.
+# config.properties is gitignored — never commit it.
+google.api.key=YOUR_API_KEY_HERE
