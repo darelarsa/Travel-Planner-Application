@@ -40,7 +40,7 @@ public class Main extends JFrame{
         JButton RegisterButton = loginPanel.getRegisterButton();  // Get the register button from the mainPanel
         RegisterButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Create your user profile, fill in profile & preference credentials");
-            changeScreen("profile");
+            changeScreen("register");
         });
     }
 
@@ -57,7 +57,7 @@ public class Main extends JFrame{
 
             String preferencestatus = currUserPreference.toString();
             System.out.println(preferencestatus);
-            changeScreen("register");
+            changeScreen("main");
         });
     }
 
@@ -68,8 +68,8 @@ public class Main extends JFrame{
             System.out.println("user account successfully created");
 
             currentUser = new User(
-                          registrationPanel.getLastName(),
-                          registrationPanel.getFirstName(),
+                          "",
+                          "",
                           currUserPreference,
                           registrationPanel.getUsername(),
                           registrationPanel.getPassword()
@@ -78,7 +78,7 @@ public class Main extends JFrame{
             String userstatus = currentUser.toString();
             System.out.println(userstatus);
 
-            changeScreen("main");
+            changeScreen("profile");
         });
     }
 
