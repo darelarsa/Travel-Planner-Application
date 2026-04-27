@@ -16,6 +16,9 @@ import javax.imageio.ImageIO;
 
 import com.tranner.Map.PlacesApiClient;
 import org.json.simple.JSONObject;
+import com.tranner.model.place.Attraction;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class TripPanel extends JPanel {
@@ -73,6 +76,7 @@ public class TripPanel extends JPanel {
     private String             selectedAttractionName = null;
     private String             selectedAttractionType = null;
     private final List<String> itineraryAttractions   = new ArrayList<>();
+    private final Map<String, Attraction> attractionMap = new HashMap<>();
 
     // ─────────────────────────────────────────────────────────────────────────
     public TripPanel() {
@@ -146,7 +150,10 @@ public class TripPanel extends JPanel {
             SwingUtilities.invokeLater(() -> {
                 selectedAttractionName = name;
                 selectedAttractionType = type;
-                attractionPanel.setAttraction(name, type);
+                Attraction a = attractionMap.get(name);
+                if (a != null) {
+                    attractionPanel.setAttraction(a);
+                }
             })
         );
 
@@ -297,19 +304,22 @@ public class TripPanel extends JPanel {
         new Thread(() -> {
             double [] coords = geocodeCity(query);
             if (coords == null) return;
-            List<JSONObject> attractions = PlacesApiClient.searchAttraction(query);
+            List<Attraction> attractions = PlacesApiClient.searchAttraction(query);
             System.out.println("[TripPanel] Got " + attractions.size() + " attractions");
 
             
             SwingUtilities.invokeLater(() -> {
                 mapView.clearMarkers();
+                attractionMap.clear();
+                for (Attraction a : attractions) {
+                    attractionMap.put(a.getName(), a);    // ← 加这行
+                }
                 if (coords != null) {
                     mapView.setCity(coords[0], coords[1], 12);
                 }
-                for (JSONObject p : attractions) {
-                    mapView.addMarker(PlacesApiClient.getLat(p),
-                    PlacesApiClient.getLng(p),
-                    PlacesApiClient.getName(p), "attraction");
+                for (Attraction a : attractions) {
+                    mapView.addMarker(a.getLatitude(), a.getLongitude(),
+                            a.getName(), "attraction");
                 }
             });
         }).start();
@@ -699,6 +709,10 @@ public class TripPanel extends JPanel {
         private String   type = null;
         private JButton  addBtn;
         private Runnable addListener;
+        private double  rating  = 0.0;
+        private String  description = null;
+        private String  address     = null;
+        private double  price   = 0.0;
 
         AttractionPanel() {
             setOpaque(false);
@@ -715,28 +729,66 @@ public class TripPanel extends JPanel {
             });
         }
 
-        void setAttraction(String n, String t) { name = n; type = t; repaint(); }
+        void setAttraction(Attraction a) {
+            this.name        = a.getName();
+            this.type        = a.getCategory();
+            this.rating      = a.getRating();
+            this.description = a.getDescription();
+            this.address     = a.getAddress().toString();
+            this.price       = a.getPrice();
+            repaint();
+        }
         void setAddListener(Runnable r)         { addListener = r; }
 
         @Override protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             int W = getWidth(), H = getHeight();
             g2.setColor(PLACEHOLDER_PANEL);
             g2.fillRoundRect(0, 0, W, H, 14, 14);
             if (name == null) {
+                // placeholder state — nothing selected yet
                 g2.setFont(FONT_BODY);
                 g2.setColor(new Color(255, 255, 255, 160));
-                String msg = "attraction info";
+                String msg = "Click a marker to see info";
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(msg, (W - fm.stringWidth(msg)) / 2, (H - 40) / 2 + fm.getAscent());
             } else {
+                int y = 20;
+                // Name
                 g2.setFont(FONT_ATTRACT);
                 g2.setColor(Color.WHITE);
-                g2.drawString(name, 16, 40);
+                g2.drawString(name, 16, y += 20);
+                // Type + Rating
                 g2.setFont(FONT_BODY);
                 g2.setColor(new Color(255, 255, 255, 200));
-                g2.drawString("Type: " + (type != null ? type : "—"), 16, 68);
+                g2.drawString((type != null ? type : "—") + "   ⭐ " + String.format("%.1f", rating),
+                        16, y += 26);
+                // Price
+                g2.drawString("Price: " + (price == 0.0 ? "Free" : "$" + (int) price),
+                        16, y += 22);
+                // Address
+                if (address != null && !address.isEmpty()) {
+                    g2.drawString(address, 16, y += 22);
+                }
+                // Description — word wrap
+                if (description != null && !description.isEmpty()) {
+                    y += 12;
+                    int maxW = W - 32;
+                    StringBuilder line = new StringBuilder();
+                    FontMetrics fm = g2.getFontMetrics();
+                    for (String word : description.split(" ")) {
+                        String test = line.length() == 0 ? word : line + " " + word;
+                        if (fm.stringWidth(test) > maxW && line.length() > 0) {
+                            g2.drawString(line.toString(), 16, y += 18);
+                            line = new StringBuilder(word);
+                        } else {
+                            line = new StringBuilder(test);
+                        }
+                    }
+                    if (line.length() > 0) g2.drawString(line.toString(), 16, y += 18);
+                }
             }
             g2.dispose();
             super.paintComponent(g);

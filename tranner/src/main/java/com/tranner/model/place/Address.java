@@ -56,6 +56,9 @@ public class Address implements java.io.Serializable {
      *   "123 Main St, Springfield, IL 62701, US"
      *   "10 Downing St, London, UK"
      */
+    public Address(String formattedAddress) {
+        this(formattedAddress, "", null, null, "");
+    }
     public String getFormattedAddress() {
         StringBuilder sb = new StringBuilder();
         sb.append(street).append(", ").append(city);

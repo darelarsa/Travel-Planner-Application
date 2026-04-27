@@ -25,6 +25,8 @@ public abstract class Place implements LocationInfo, Serializable {
     private double rating;              // 0.0 – 5.0
     private double price;               // Approximate cost in USD
     private List<LocalTime> operationalHours;   // Ordered open/close time pairs
+    private double latitude;
+    private double longitude;
 
     // --- Constructor ---
 
@@ -142,6 +144,10 @@ public abstract class Place implements LocationInfo, Serializable {
         this.price = price;
     }
 
+    public double getLatitude()  { return latitude; }
+    public double getLongitude() { return longitude; }
+    public void setLatitude(double lat)  { this.latitude = lat; }
+    public void setLongitude(double lng) { this.longitude = lng; }
     // --- Abstract hook ---
 
     /**

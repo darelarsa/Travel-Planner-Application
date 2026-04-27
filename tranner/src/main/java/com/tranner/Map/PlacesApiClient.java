@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.tranner.model.place.Attraction;
+
 
 public class PlacesApiClient {
     private static final String PLACES_URL =
@@ -28,8 +30,13 @@ public class PlacesApiClient {
 
     private static final String API_KEY = AppConfig.get("google.api.key");
 
-    public static List<JSONObject> searchAttraction(String city ){
-        return search ("tourist attractions in " + city);
+    public static List<Attraction> searchAttraction(String city) {
+        List<JSONObject> raw = search("tourist attractions in " + city);
+        List<Attraction> result = new ArrayList<>();
+        for (JSONObject p : raw) {
+            result.add(Attraction.fromGooglePlace(p));
+        }
+        return result;
     }
     public static List<JSONObject> searchRestaurants(String city ){
         return search ("popular restaurants in " + city);
@@ -148,13 +155,19 @@ public class PlacesApiClient {
 
     public static void main(String[] args) {
         System.out.println("=== ATTRACTIONS ===");
-        List<JSONObject> attractions = searchAttraction("Chicago");
+        System.out.println("=== ATTRACTIONS ===");
+        List<Attraction> attractions = searchAttraction("Chicago");
         if (attractions.isEmpty()) {
             System.out.println("No attractions found.");
         } else {
-            for (JSONObject p : attractions) {
-                System.out.println(getName(p) + " | lat=" + getLat(p) + " lng=" + getLng(p)
-                        + " | rating=" + getRating(p));
+            for (Attraction a : attractions) {
+                System.out.println("Name    : " + a.getName());
+                System.out.println("Address : " + a.getAddress());
+                System.out.println("Rating  : " + a.getRating());
+                System.out.println("Desc    : " + a.getDescription());
+                System.out.println("Price   : $" + a.getPrice());
+                System.out.println("Lat/Lng : " + a.getLatitude() + ", " + a.getLongitude());
+                System.out.println("------");
             }
         }
 

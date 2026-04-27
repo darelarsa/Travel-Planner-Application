@@ -88,7 +88,6 @@ public class MapViewClient extends JPanel{
     private void runJs(String script) {
         Platform.runLater(() -> {
             if (engine != null && mapReady) {
-                System.out.println("[runJs] executing: " + script.substring(0, Math.min(50, script.length())));
                 engine.executeScript(script);
             }else{
                 System.out.println("[runJs] SKIPPED (mapReady=" + mapReady + ")");
@@ -101,7 +100,7 @@ public class MapViewClient extends JPanel{
 
         // Fetch real data from Places API before opening the window
         System.out.println("[Test] Fetching places from API...");
-        List<org.json.simple.JSONObject> attractions = PlacesApiClient.searchAttraction("Chicago");
+        List<com.tranner.model.place.Attraction> attractions = PlacesApiClient.searchAttraction("Chicago");
         List<org.json.simple.JSONObject> hotels      = PlacesApiClient.searchHotels("Chicago");
         List<org.json.simple.JSONObject> restaurants = PlacesApiClient.searchRestaurants("Chicago");
         System.out.println("[Test] Got " + attractions.size() + " attractions, "
@@ -128,9 +127,9 @@ public class MapViewClient extends JPanel{
                 System.out.println("[Test] Adding markers from Places API...");
                 mapView.setCity(41.8781, -87.6298, 12);
 
-                for (org.json.simple.JSONObject p : attractions) {
-                    mapView.addMarker(PlacesApiClient.getLat(p), PlacesApiClient.getLng(p),
-                            PlacesApiClient.getName(p), "attraction");
+                for (com.tranner.model.place.Attraction a : attractions) {
+                    mapView.addMarker(a.getLatitude(), a.getLongitude(),
+                            a.getName(), "attraction");
                 }
                 for (org.json.simple.JSONObject p : hotels) {
                     mapView.addMarker(PlacesApiClient.getLat(p), PlacesApiClient.getLng(p),
