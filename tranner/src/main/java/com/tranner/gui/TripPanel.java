@@ -14,6 +14,10 @@ import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
 
+import com.tranner.Map.PlacesApiClient;
+import org.json.simple.JSONObject;
+
+
 public class TripPanel extends JPanel {
     // For testing layout only - remove later
     public static void main(String[] args) {
@@ -289,7 +293,58 @@ public class TripPanel extends JPanel {
     private void handleSearch(String query) {
         if (query.isEmpty()) return;
         System.out.println("[TripPanel] Search: " + query);
+
+        new Thread(() -> {
+            double [] coords = geocodeCity(query);
+            if (coords == null) return;
+            List<JSONObject> attractions = PlacesApiClient.searchAttraction(query);
+            System.out.println("[TripPanel] Got " + attractions.size() + " attractions");
+
+            
+            SwingUtilities.invokeLater(() -> {
+                mapView.clearMarkers();
+                if (coords != null) {
+                    mapView.setCity(coords[0], coords[1], 12);
+                }
+                for (JSONObject p : attractions) {
+                    mapView.addMarker(PlacesApiClient.getLat(p),
+                    PlacesApiClient.getLng(p),
+                    PlacesApiClient.getName(p), "attraction");
+                }
+            });
+        }).start();
     }
+    private double[] geocodeCity(String city) {
+    try {
+        String urlStr = "https://geocoding-api.open-meteo.com/v1/search?name="
+                + city.replace(" ", "+") + "&count=1&language=en&format=json";
+        java.net.HttpURLConnection conn =
+                (java.net.HttpURLConnection) new java.net.URL(urlStr).openConnection();
+        conn.setRequestMethod("GET");
+        java.util.Scanner sc = new java.util.Scanner(conn.getInputStream());
+        StringBuilder sb = new StringBuilder();
+        while (sc.hasNextLine()) sb.append(sc.nextLine());
+        sc.close();
+
+        org.json.simple.JSONObject root =
+                (org.json.simple.JSONObject) new org.json.simple.parser.JSONParser().parse(sb.toString());
+        org.json.simple.JSONArray results =
+                (org.json.simple.JSONArray) root.get("results");
+
+        if (results == null || results.isEmpty()) {
+            System.err.println("[TripPanel] City not found: " + city);
+            return null;
+        }
+        org.json.simple.JSONObject loc = (org.json.simple.JSONObject) results.get(0);
+        return new double[]{
+            ((Number) loc.get("latitude")).doubleValue(),
+            ((Number) loc.get("longitude")).doubleValue()
+        };
+    } catch (Exception e) {
+        System.err.println("[TripPanel] Geocode error: " + e.getMessage());
+        return null;
+    }
+}
 
     // ══════════════════════════════════════════════════════════════════════════
     //  MiniCalendar

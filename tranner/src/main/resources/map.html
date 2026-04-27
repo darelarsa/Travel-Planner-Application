@@ -21,17 +21,24 @@
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var map = L.map('map').setView([41.8781, -87.6298], 12);
+    var map = L.map('map');
 
-    // OpenStreetMap 瓦片 — 不需要 API key
+    // OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'OpenStreetMap'
     }).addTo(map);
 
     var markers = [];
+    var mapInitialized = false;
 
     function setCity(lat, lng, zoom) {
-        map.setView([lat, lng], zoom);
+        if (!mapInitialized) {
+            map.invalidateSize();
+            map.setView([lat, lng], zoom);
+            mapInitialized = true;
+        } else {
+            map.setView([lat, lng], zoom);
+        }
         clearMarkers();
     }
 

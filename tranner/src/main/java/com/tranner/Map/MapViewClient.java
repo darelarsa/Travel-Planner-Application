@@ -88,7 +88,10 @@ public class MapViewClient extends JPanel{
     private void runJs(String script) {
         Platform.runLater(() -> {
             if (engine != null && mapReady) {
+                System.out.println("[runJs] executing: " + script.substring(0, Math.min(50, script.length())));
                 engine.executeScript(script);
+            }else{
+                System.out.println("[runJs] SKIPPED (mapReady=" + mapReady + ")");
             }
         });
     }
