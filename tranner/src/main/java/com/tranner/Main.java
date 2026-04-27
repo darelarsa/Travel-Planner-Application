@@ -42,7 +42,7 @@ public class Main extends JFrame{
         makeTripPanel();
 
         this.cardPanel = new JPanel(new CardLayout()); //make card panel & frame
-        cardPanel.add(loginPanel, "main");
+        cardPanel.add(loginPanel, "login");
         cardPanel.add(createUserProfilePanel, "profile");
         cardPanel.add(registrationPanel, "register");
         cardPanel.add(mainPanel, "main");
