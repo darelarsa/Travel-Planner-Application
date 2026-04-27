@@ -2,9 +2,7 @@ package com.tranner;
 
 import javax.swing.*;
 
-import com.tranner.gui.LoginPanel;
-import com.tranner.gui.RegisterPanel;
-import com.tranner.gui.createProfilePanel;
+import com.tranner.gui.*;
 import com.tranner.model.person.*;
 import com.tranner.network.RequestMessage;
 import com.tranner.network.RequestMessage.RequestType;
@@ -19,6 +17,8 @@ public class Main extends JFrame{
     private LoginPanel loginPanel;
     private RegisterPanel registrationPanel;
     private createProfilePanel createUserProfilePanel;
+    private MainPanel mainPanel;
+    private TripPanel tripPanel;
 
     //current user data
     private User currentUser;
@@ -35,11 +35,18 @@ public class Main extends JFrame{
         makeMainMenuPanel(); //call helper function
         makeProfilePanel();
         makeRegisterPanel();
+        makeMainMenuPanel();
+        makeProfilePanel();
+        makeRegisterPanel();
+        makeMainPanel();
+        makeTripPanel();
 
         this.cardPanel = new JPanel(new CardLayout()); //make card panel & frame
         cardPanel.add(loginPanel, "main");
         cardPanel.add(createUserProfilePanel, "profile");
         cardPanel.add(registrationPanel, "register");
+        cardPanel.add(mainPanel, "main");
+        cardPanel.add(tripPanel, "trip");
         this.add(cardPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800,800);
@@ -55,9 +62,9 @@ public class Main extends JFrame{
             RequestMessage loginRequest = RequestMessage.createLoginRequest(username, password);
             sendRequestToServer(loginRequest);
             if (currentUser != null) {
-                // TODO: Change this to the main menu screen once it's implemented
                 System.out.println("Login successful!");
                 System.out.println("User info:" + currentUser.toString());
+                changeScreen("main");
             } else {
                 JOptionPane.showMessageDialog(this, "Login failed. Please check your credentials.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -127,7 +134,7 @@ public class Main extends JFrame{
                 sendRequestToServer(registerRequest);
                 currentUser = null; // Clear the current user after registration
             }
-            changeScreen("main");
+            changeScreen("login");
         });
     }
 
@@ -154,6 +161,18 @@ public class Main extends JFrame{
                 changeScreen("profile");
             }
         });
+    }
+
+    private void makeMainPanel() {
+        this.mainPanel = new MainPanel();
+
+        mainPanel.getAddTripButton().addActionListener(e -> {
+            changeScreen("trip");
+        });
+    }
+
+    private void makeTripPanel() {
+        this.tripPanel = new TripPanel();
     }
 
     private void changeScreen(String screen){
