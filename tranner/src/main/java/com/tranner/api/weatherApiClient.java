@@ -75,7 +75,8 @@ public class weatherApiClient {
         try{
             // 1. Fetch the API response based on API Link
             String url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude +
-                    "&longitude=" + longitude + "&current=temperature_2m,relative_humidity_2m,wind_speed_10m" +
+                    "&longitude=" + longitude +
+                    "&current=temperature_2m,relative_humidity_2m,wind_speed_10m," +
                     "apparent_temperature,precipitation,weather_code" +
                     "&daily=uv_index_max&forecast_days=1";
             HttpURLConnection apiConnection = fetchApiResponse(url);
@@ -94,21 +95,23 @@ public class weatherApiClient {
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
             JSONObject currentWeatherJson = (JSONObject) jsonObject.get("current");
-            //System.out.println(currentWeatherJson.toJSONString());
 
             // 4. Store the data into their corresponding data type
             time = (String) currentWeatherJson.get("time");
-            //System.out.println("Current Time: " + time);
-            temperature = (double) currentWeatherJson.get("temperature_2m");
-            //System.out.println("Current Temperature (C): " + temperature);
-            relativeHumidity = (int) currentWeatherJson.get("relative_humidity_2m");
-            //System.out.println("Relative Humidity: " + relativeHumidity);
-            windSpeed = (double) currentWeatherJson.get("wind_speed_10m");
-            //System.out.println("Weather Description: " + windSpeed);
-            uvIndex = (int) currentWeatherJson.get("uv_index_max");
-            feelsLikeTemperature = (double) currentWeatherJson.get("apparent_temperature");
-            precipitation = (double) currentWeatherJson.get("precipitation");
-            condition_code = (int) currentWeatherJson.get("weather_code");
+            temperature = ((Number) currentWeatherJson.get("temperature_2m")).doubleValue();
+            relativeHumidity = ((Number) currentWeatherJson.get("relative_humidity_2m")).intValue();
+            windSpeed = ((Number) currentWeatherJson.get("wind_speed_10m")).doubleValue();
+            feelsLikeTemperature = ((Number) currentWeatherJson.get("apparent_temperature")).doubleValue();
+            precipitation = ((Number) currentWeatherJson.get("precipitation")).doubleValue();
+            condition_code = ((Number) currentWeatherJson.get("weather_code")).intValue();
+
+            // uv_index_max comes from the daily block
+            JSONObject dailyJson = (JSONObject) jsonObject.get("daily");
+            if (dailyJson != null) {
+                JSONArray uvArray = (JSONArray) dailyJson.get("uv_index_max");
+                uvIndex = (uvArray != null && !uvArray.isEmpty())
+                        ? ((Number) uvArray.get(0)).intValue() : 0;
+            }
 
             // Convert weather code to condition string
             if (condition_code == 0) {
@@ -229,5 +232,32 @@ public class weatherApiClient {
 
     public static Weather.Condition getMappedCondition(){
         return mappedCondition;
+    }
+
+    /**
+     * Fetches current weather for the given city and returns a populated Weather object.
+     * Returns null if the API call fails.
+     */
+    public Weather fetchWeather(String city) {
+        retrieveWeatherInfo(city);
+        if (condition == null) return null;
+
+        double tempF       = (temperature * 9.0 / 5.0) + 32.0;
+        double feelsLikeF  = (feelsLikeTemperature * 9.0 / 5.0) + 32.0;
+
+        return new Weather(
+                city, "",
+                java.time.LocalDate.now(),
+                temperature,
+                tempF,
+                feelsLikeTemperature,
+                feelsLikeF,
+                relativeHumidity,
+                windSpeed,
+                precipitation,
+                uvIndex,
+                mappedCondition,
+                condition
+        );
     }
 }

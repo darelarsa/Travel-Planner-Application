@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.imageio.ImageIO;
+import com.tranner.model.itinerary.Itinerary;
+import com.tranner.model.weather.Weather;
+import com.tranner.api.weatherApiClient;
 
 public class MainPanel extends JPanel {
     public static void main(String[] args) {
@@ -24,14 +27,32 @@ public class MainPanel extends JPanel {
             frame.repaint();
         });
 
-        SwingUtilities.invokeLater(() -> {
-            for (JButton button : mainPanel.getTripOpenButtons()) {
-                button.addActionListener(e -> {
-                    frame.setContentPane(tripPanel);
-                    frame.revalidate();
-                    frame.repaint();
-                });
+        // Save Trip → build Itinerary, add card, go back, then fetch weather in background
+        tripPanel.getSaveButton().addActionListener(e -> {
+            Itinerary it = tripPanel.buildItinerary(1);
+            mainPanel.addTrip(it);
+            frame.setContentPane(mainPanel);
+            frame.revalidate();
+            frame.repaint();
+
+            String city = tripPanel.getSearchedCity();
+            if (!city.isEmpty()) {
+                new Thread(() -> {
+                    weatherApiClient client = new weatherApiClient();
+                    Weather w = client.fetchWeather(city);
+                    if (w != null) {
+                        it.setWeather(w);
+                        SwingUtilities.invokeLater(mainPanel::refreshTrips);
+                    }
+                }).start();
             }
+        });
+
+        // Back → return to MainPanel without saving
+        tripPanel.getBackButton().addActionListener(e -> {
+            frame.setContentPane(mainPanel);
+            frame.revalidate();
+            frame.repaint();
         });
 
         frame.add(mainPanel);
@@ -73,6 +94,7 @@ public class MainPanel extends JPanel {
     private final List<JButton> tripOpenButtons = new ArrayList<>();
     private final List<JButton> personEditButtons = new ArrayList<>();
     private final List<JButton> personDeleteButtons = new ArrayList<>();
+    private final List<Itinerary> savedTrips = new ArrayList<>();
 
     public MainPanel() {
         setOpaque(false);
@@ -173,17 +195,17 @@ public class MainPanel extends JPanel {
         tripsScrollPane.setBounds(pad, 134, listW, listH);
         tripsCard.add(tripsScrollPane);
 
-        TripPreviewCard trip1 = new TripPreviewCard(
-                "Trip Name",
-                "Location | Start Date - End Date",
-                true
-        );
-        trip1.setBounds(0, 0, listW - 8, 140);
-        tripsListPanel.add(trip1);
-        tripOpenButtons.add(trip1.getOpenButton());
+        int y = 0;
+        for (Itinerary trip : savedTrips) {
+            String subtitle = trip.getStartDate() + " – " + trip.getEndDate();
+            TripPreviewCard card = new TripPreviewCard(trip.getTripName(), subtitle, true, trip.getWeather());
+            card.setBounds(0, y, listW - 8, 140);
+            tripsListPanel.add(card);
+            tripOpenButtons.add(card.getOpenButton());
+            y += 150;
+        }
 
-
-        tripsListPanel.setPreferredSize(new Dimension(listW, 140));
+        tripsListPanel.setPreferredSize(new Dimension(listW, Math.max(y, 10)));
         tripsListPanel.revalidate();
         tripsListPanel.repaint();
     }
@@ -525,11 +547,13 @@ public class MainPanel extends JPanel {
         private final String subtitle;
         private final boolean oneBox;
         private final JButton openButton;
+        private final Weather weather;
 
-        TripPreviewCard(String name, String subtitle, boolean oneBox) {
+        TripPreviewCard(String name, String subtitle, boolean oneBox, Weather weather) {
             this.name = name;
             this.subtitle = subtitle;
             this.oneBox = oneBox;
+            this.weather = weather;
 
             setOpaque(false);
             setLayout(null);
@@ -569,7 +593,20 @@ public class MainPanel extends JPanel {
             drawTinyPeople(g2, getWidth() - 175, 41);
 
             if (oneBox) {
-                drawPlaceholder(g2, 13, 70, 165, 65, "weather");
+                // weather box (13, 70, 165x65)
+                g2.setColor(PLACEHOLDER_BG);
+                g2.fillRoundRect(13, 70, 165, 65, 8, 8);
+                if (weather != null) {
+                    g2.setFont(new Font("SansSerif", Font.BOLD, 18));
+                    g2.setColor(TEXT_GRAY);
+                    g2.drawString(String.format("%.0f°C", weather.getTempCelsius()), 20, 100);
+                    g2.setFont(FONT_BODY);
+                    g2.drawString(weather.getConditionText(), 20, 120);
+                } else {
+                    g2.setFont(FONT_BODY);
+                    g2.setColor(TEXT_PLACEHOLDER);
+                    g2.drawString("weather loading...", 20, 105);
+                }
 
                 g2.setFont(FONT_BOLD);
                 g2.setColor(Color.BLACK);
@@ -683,5 +720,14 @@ public class MainPanel extends JPanel {
 
     public List<JButton> getPersonDeleteButtons() {
         return Collections.unmodifiableList(personDeleteButtons);
+    }
+
+    public void addTrip(Itinerary trip) {
+        savedTrips.add(trip);
+        buildLayout();
+    }
+
+    public void refreshTrips() {
+        buildLayout();
     }
 }

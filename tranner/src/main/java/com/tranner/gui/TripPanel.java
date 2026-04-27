@@ -15,6 +15,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import com.tranner.Map.PlacesApiClient;
+import com.tranner.model.itinerary.Itinerary;
 import org.json.simple.JSONObject;
 import com.tranner.model.place.Attraction;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ public class TripPanel extends JPanel {
     // ── State ─────────────────────────────────────────────────────────────────
     private String             selectedAttractionName = null;
     private String             selectedAttractionType = null;
+    private String             currentCity            = "";
     private final List<String> itineraryAttractions   = new ArrayList<>();
     private final Map<String, Attraction> attractionMap = new HashMap<>();
 
@@ -299,6 +301,7 @@ public class TripPanel extends JPanel {
 
     private void handleSearch(String query) {
         if (query.isEmpty()) return;
+        currentCity = query;
         System.out.println("[TripPanel] Search: " + query);
 
         new Thread(() -> {
@@ -1044,6 +1047,20 @@ public class TripPanel extends JPanel {
     public LocalDate     getEndDate()                { return calendar.getRangeEnd(); }
     public Set<String>   getSelectedCompanions()     { return companionsDropdown.getSelected(); }
     public List<String>  getItineraryAttractions()   { return Collections.unmodifiableList(itineraryAttractions); }
+    public String        getSearchedCity()            { return currentCity; }
+
+    public Itinerary buildItinerary(int userID) {
+        LocalDate start = getStartDate();
+        LocalDate end   = getEndDate();
+        if (start == null) start = LocalDate.now();
+        if (end   == null) end   = start.plusDays(1);
+        Itinerary it = new Itinerary(userID, getTripName(), start, end);
+        for (String name : itineraryAttractions) {
+            Attraction a = attractionMap.get(name);
+            if (a != null) it.addAttraction(a);
+        }
+        return it;
+    }
 
     public void setTripName(String name) { tripNameField.setText(name); }
 
@@ -1057,4 +1074,7 @@ public class TripPanel extends JPanel {
         add(companionsDropdown);
         doLayout(); repaint();
     }
+
+
+
 }
