@@ -1,10 +1,12 @@
 package com.tranner.model.person;
 
+import java.io.Serializable;
+
 /**
  * Represents a general person in the travel planner system.
  * Acts as the base class for User and any non-registered travel companions.
  */
-public class Person {
+public class Person implements Serializable {
  
     // --- Static ID counter ---
     private static int nextId = 1;

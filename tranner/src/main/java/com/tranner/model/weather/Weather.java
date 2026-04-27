@@ -11,7 +11,7 @@ import java.util.List;
  * Populated by WeatherService after calling the WeatherAPI.
  * Contains both raw weather data and derived clothing suggestions.
  */
-public class Weather {
+public class Weather implements java.io.Serializable {
  
     // --- Enums ---
  

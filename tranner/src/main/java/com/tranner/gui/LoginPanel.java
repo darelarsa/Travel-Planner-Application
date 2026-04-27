@@ -2,12 +2,10 @@ package com.tranner.gui;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
@@ -287,7 +285,7 @@ public class LoginPanel extends JPanel {
 
     // Bonus getters in case the controller needs them
     public JButton getLoginButton()        { return loginButton; }
-    public JTextField getUsernameField()   { return loginUsernameField; }
-    public JTextField getPasswordField()   { return loginPasswordField; }
+    public String getUsername()   { return loginUsernameField.getText().trim(); }
+    public String getPassword()   { return loginPasswordField.getText().trim(); }
     public JLabel getForgotPasswordLabel() { return forgotPasswordLabel; }
 }

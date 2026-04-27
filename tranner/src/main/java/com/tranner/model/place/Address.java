@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Object representing a physical address.
  */
-public class Address {
+public class Address implements java.io.Serializable {
 
     // --- Fields ---
 

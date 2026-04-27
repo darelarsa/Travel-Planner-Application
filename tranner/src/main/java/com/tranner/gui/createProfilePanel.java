@@ -623,7 +623,7 @@ public class createProfilePanel extends JPanel {
         return null;
     }
 
-    public Preference getPreference() {
-        return new Preference(getBudget(), getPlace(), getTransportMode(), getIntensity());
-    }
+    //public Preference getPreference() {
+    //    return new Preference(getBudget(), getPlace(), getTransportMode(), getIntensity());
+    //}
 }

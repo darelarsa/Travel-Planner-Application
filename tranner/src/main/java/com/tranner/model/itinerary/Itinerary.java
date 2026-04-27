@@ -22,7 +22,7 @@ import java.util.Objects;
  *   - Trip date range (start and end date)
  *   - An optional Weather forecast for the destination
  */
-public class Itinerary {
+public class Itinerary implements java.io.Serializable {
  
     // --- Static ID counter ---
     private static int nextId = 1;

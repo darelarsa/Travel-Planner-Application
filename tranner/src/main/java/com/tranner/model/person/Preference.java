@@ -8,7 +8,7 @@ package com.tranner.model.person;
  * Intensity  — preferred pace of the trip using the Intensity enum.
  */
 
-public class Preference {
+public class Preference implements java.io.Serializable {
  
     // --- Enums ---
  
@@ -56,7 +56,7 @@ public class Preference {
     /**
      * Full constructor for when all preferences are known.
      */
-    public Preference(Budget budget, String place, TransportMode transport, Intensity intensity) {
+    public Preference(Budget budget, TransportMode transport, Intensity intensity) {
         this.budget    = budget;
         this.transport = transport;
         this.intensity = intensity;

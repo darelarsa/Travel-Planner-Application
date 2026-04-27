@@ -43,6 +43,7 @@ public class UserServer {
 
                     // Read the request message from the client
                     RequestMessage request = (RequestMessage) in.readObject();
+                    
                     System.out.println("Received request: " + request.getType());
 
                     // Process the request and generate a response
@@ -75,6 +76,7 @@ public class UserServer {
                         out.writeObject(ResponseMessage.createFailureResponse("Unknown request type"));
                     }
 
+                    printUsers(); // Print the current users in the system for debugging
                     out.flush();
 
                 } catch (ClassNotFoundException e) {
@@ -105,6 +107,13 @@ public class UserServer {
         }
         userStore.add(user);
         return true;
+    }
+
+    public void printUsers() {
+        System.out.println("Current users in the system:");
+        for (User user : userStore) {
+            System.out.println(user.toString());
+        }
     }
 
     // main method for testing
