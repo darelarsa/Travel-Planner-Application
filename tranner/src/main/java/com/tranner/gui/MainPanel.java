@@ -55,9 +55,6 @@ public class MainPanel extends JPanel {
     private static final Font FONT_BOLD = new Font("SansSerif", Font.BOLD, 16);
     private static final Font FONT_SEARCH = new Font("SansSerif", Font.PLAIN, 16);
 
-    private JLabel logoLabel;
-    private JLabel titleLabel;
-
     private JPanel tripsCard;
     private JPanel peopleCard;
 
@@ -80,8 +77,6 @@ public class MainPanel extends JPanel {
     public MainPanel() {
         setOpaque(false);
         setLayout(null);
-
-        setupLogo();
 
         tripsCard = new RoundedCardPanel();
         tripsCard.setLayout(null);
@@ -106,8 +101,6 @@ public class MainPanel extends JPanel {
         tripsScrollPane = makeScrollPane(tripsListPanel);
         peopleScrollPane = makeScrollPane(peopleListPanel);
 
-        add(logoLabel);
-        add(titleLabel);
         add(tripsCard);
         add(peopleCard);
 
@@ -119,27 +112,6 @@ public class MainPanel extends JPanel {
         });
 
         SwingUtilities.invokeLater(this::buildLayout);
-    }
-
-    private void setupLogo() {
-        BufferedImage logoImg = null;
-
-        try {
-            logoImg = ImageIO.read(getClass().getResource("/com/tranner/gui/logo.png"));
-        } catch (Exception ignored) {}
-
-        if (logoImg != null) {
-            Image scaled = logoImg.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
-            logoLabel = new JLabel(new ImageIcon(scaled));
-        } else {
-            logoLabel = new JLabel("\uD83C\uDF10");
-            logoLabel.setFont(new Font("SansSerif", Font.PLAIN, 56));
-            logoLabel.setForeground(Color.WHITE);
-        }
-
-        titleLabel = new JLabel("TripSync");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 38));
-        titleLabel.setForeground(Color.WHITE);
     }
 
     private void buildLayout() {
@@ -161,13 +133,10 @@ public class MainPanel extends JPanel {
 
         int pad = 24;
 
-        logoLabel.setBounds(cardX + 55, cardY + 25, 64, 64);
-        titleLabel.setBounds(cardX + 115, cardY + 32, 260, 50);
-
         int innerX = cardX + pad;
-        int innerY = cardY + pad + 95;
         int innerW = cardW - pad * 2;
-        int innerH = cardH - pad * 2 - 125;
+        int innerY = cardY + pad + 35;
+        int innerH = cardH - pad * 2 - 50;
 
         int gap = 20;
         int leftW = (int)(innerW * 0.62);
@@ -213,16 +182,8 @@ public class MainPanel extends JPanel {
         tripsListPanel.add(trip1);
         tripOpenButtons.add(trip1.getOpenButton());
 
-        TripPreviewCard trip2 = new TripPreviewCard(
-                "Trip Name 2",
-                "Location | Start Date - End Date",
-                false
-        );
-        trip2.setBounds(0, 156, listW - 8, 145);
-        tripsListPanel.add(trip2);
-        tripOpenButtons.add(trip2.getOpenButton());
 
-        tripsListPanel.setPreferredSize(new Dimension(listW, 156 + 145));
+        tripsListPanel.setPreferredSize(new Dimension(listW, 140));
         tripsListPanel.revalidate();
         tripsListPanel.repaint();
     }
@@ -293,6 +254,8 @@ public class MainPanel extends JPanel {
         g2.setPaint(new GradientPaint(0, 0, BG_TOP, 0, getHeight(), BG_BOTTOM));
         g2.fillRect(0, 0, getWidth(), getHeight());
 
+        drawLogo(g2);
+
         int cX = (int)(getWidth() * 0.025);
         int cY = (int)(getHeight() * 0.10);
         int cW = (int)(getWidth() * 0.950);
@@ -306,6 +269,29 @@ public class MainPanel extends JPanel {
 
         g2.dispose();
         super.paintComponent(g);
+    }
+
+    private void drawLogo(Graphics2D g2) {
+        BufferedImage img = null;
+
+        try {
+            img = ImageIO.read(getClass().getResource("/com/tranner/gui/logo.png"));
+        } catch (Exception ignored) {}
+
+        int lx = (int)(getWidth() * 0.025);
+        int ly = (int)(getHeight() * 0.02);
+
+        if (img != null) {
+            g2.drawImage(img.getScaledInstance(32, 32, Image.SCALE_SMOOTH), lx, ly, null);
+        } else {
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 26));
+            g2.setColor(Color.WHITE);
+            g2.drawString("\uD83C\uDF10", lx, ly + 26);
+        }
+
+        g2.setFont(new Font("SansSerif", Font.BOLD, 20));
+        g2.setColor(Color.WHITE);
+        g2.drawString("TripSync", lx + 40, ly + 23);
     }
 
     private JLabel makeTitleLabel(String text) {
