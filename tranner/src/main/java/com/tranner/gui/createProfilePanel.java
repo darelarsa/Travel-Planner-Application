@@ -105,6 +105,7 @@ public class createProfilePanel extends JPanel {
                 case "Moderate" -> budgetModerate.setSelected(true);
                 case "High"     -> budgetHigh.setSelected(true);
                 case "Luxury"   -> budgetLuxury.setSelected(true);
+                // default         -> { budgetDropdown. }
             }
         });
 
@@ -461,6 +462,11 @@ public class createProfilePanel extends JPanel {
             }
             super.repaint();
         }
+
+        public void reset() {
+            selected = null;
+            close();
+        }
     }
 
     // ── Helper: placeholder text field ────────────────────────────────────────
@@ -591,6 +597,17 @@ public class createProfilePanel extends JPanel {
     // ══════════════════════════════════════════════════════════════════════════
     public JButton getSubmitProfileButton() { return submitProfileButton; }
     public JButton getBackToLoginButton()   { return backToLoginButton;   }
+
+    public void resetFields() {
+        firstNameField.setText("");
+        lastNameField.setText("");
+        budgetGroup.clearSelection(); // TODO: fix null selection 
+        transportGroup.clearSelection();
+        intensityGroup.clearSelection();
+        budgetDropdown.reset();
+        transportDropdown.reset();
+        intensityDropdown.reset();
+    }
 
     /** Legacy: returns firstName for controller compatibility. */
     public String getPlace() { return firstNameField.getText().trim(); }

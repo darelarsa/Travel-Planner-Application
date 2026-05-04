@@ -22,14 +22,12 @@ public class Main extends JFrame{
 
     //current user data
     private User currentUser;
-    private boolean isLoggedIn;
     private boolean addingCompanion;
 
     public Main(){
         super();
 
         currentUser = null;
-        isLoggedIn = false;
         addingCompanion = false;
     
         makeMainMenuPanel(); //call helper function
@@ -41,7 +39,7 @@ public class Main extends JFrame{
         makeMainPanel();
         makeTripPanel();
 
-        this.cardPanel = new JPanel(new CardLayout()); //make card panel & frame
+        this.cardPanel = new JPanel(new CardLayout()); // make card panel & frame
         cardPanel.add(loginPanel, "login");
         cardPanel.add(createUserProfilePanel, "profile");
         cardPanel.add(registrationPanel, "register");
@@ -112,6 +110,8 @@ public class Main extends JFrame{
     private void makeProfilePanel() { //helper to help make main menu panel
         this.createUserProfilePanel = new createProfilePanel();
         JButton submitProfileButton = createUserProfilePanel.getSubmitProfileButton();  // Get the submit button from the makeProfilePanel
+        JButton cancelButton = createUserProfilePanel.getBackToLoginButton(); // Get the cancel button from the makeProfilePanel
+
         submitProfileButton.addActionListener(e -> {   //Adds actionlistener to submit button to handle registration logic when clicked
             System.out.println("Profile creation successful, please fill in login credentials");
 
@@ -123,9 +123,14 @@ public class Main extends JFrame{
                 createUserProfilePanel.getIntensity()
             );
 
-            if (addingCompanion) {      // If we're adding a companion, we create a new User for the companion and add it to the current user's companions list
-                User companion = new User(firstName, lastName, currPreference, null, null);
+            if (addingCompanion) {      // If we're adding a companion, we create a new Person for the companion and add it to the current user's companions list
+                Person companion = new Person(lastName, firstName, currPreference);
                 currentUser.addCompanion(companion);
+                mainPanel.setCompanions(currentUser.getCompanions()); // Update the main panel's companion list display
+                addingCompanion = false; // Reset the flag after adding the companion
+                mainPanel.refreshTrips(); // Refresh the main panel to show the new companion
+                createUserProfilePanel.resetFields(); // Clear the profile fields after adding a companion
+                changeScreen("main");
             } else {
                 currentUser.setFirstName(firstName);
                 currentUser.setLastName(lastName);
@@ -133,8 +138,21 @@ public class Main extends JFrame{
                 RequestMessage registerRequest = RequestMessage.createRegisterRequest(currentUser);
                 sendRequestToServer(registerRequest);
                 currentUser = null; // Clear the current user after registration
+                createUserProfilePanel.resetFields(); // Clear the profile fields after successful profile creation
+                changeScreen("login");
             }
-            changeScreen("login");
+        });
+
+        cancelButton.addActionListener(e -> { // Action listener for cancel button to return to login screen
+            createUserProfilePanel.resetFields(); // Clear the profile fields when canceling
+
+            if (addingCompanion) { // If we were in the process of adding a companion, reset the flag and return to the main screen instead of login
+                addingCompanion = false;
+                changeScreen("main");
+                return;
+            } else {
+                changeScreen("login");
+            }
         });
     }
 
@@ -160,14 +178,22 @@ public class Main extends JFrame{
                           );
                 changeScreen("profile");
             }
+            registrationPanel.clearFields(); // Clear the registration fields after successful registration
         });
     }
 
-    private void makeMainPanel() {
+    // Helper function to create the main menu panel for the user
+    // Current functionalities include companion creation and navigating to the trip panel
+    private void makeMainPanel() { 
         this.mainPanel = new MainPanel();
 
         mainPanel.getAddTripButton().addActionListener(e -> {
             changeScreen("trip");
+        });
+
+        mainPanel.getAddPersonButton().addActionListener(e -> {
+            addingCompanion = true;
+            changeScreen("profile");
         });
     }
 

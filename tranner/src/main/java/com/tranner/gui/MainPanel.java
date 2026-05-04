@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.imageio.ImageIO;
 import com.tranner.model.itinerary.Itinerary;
+import com.tranner.model.person.Person;
 import com.tranner.model.weather.Weather;
 import com.tranner.api.weatherApiClient;
 
@@ -95,6 +96,8 @@ public class MainPanel extends JPanel {
     private final List<JButton> personEditButtons = new ArrayList<>();
     private final List<JButton> personDeleteButtons = new ArrayList<>();
     private final List<Itinerary> savedTrips = new ArrayList<>();
+
+    private List<Person> companions;
 
     public MainPanel() {
         setOpaque(false);
@@ -233,8 +236,12 @@ public class MainPanel extends JPanel {
 
         int y = 0;
 
-        for (int i = 0; i < 7; i++) {
-            PersonRow row = new PersonRow("First Last", "Budget, Transport, Intensity");
+        for (int i = 0; i < companions.size(); i++) {
+            String name = companions.get(i).getFirstName() + " " + companions.get(i).getLastName();
+            String detail = "Budget: " + companions.get(i).getPreference().getBudget()
+                    + ", Transport: " + companions.get(i).getPreference().getTransport()
+                    + ", Intensity: " + companions.get(i).getPreference().getIntensity();
+            PersonRow row = new PersonRow(name, detail);
             row.setBounds(0, y, listW - 8, 64);
             peopleListPanel.add(row);
 
@@ -729,5 +736,17 @@ public class MainPanel extends JPanel {
 
     public void refreshTrips() {
         buildLayout();
+    }
+
+    public List<Itinerary> getSavedTrips() {
+        return Collections.unmodifiableList(savedTrips);
+    }
+
+    public List<Person> getCompanions() {
+        return Collections.unmodifiableList(companions);
+    }
+
+    public void setCompanions(List<Person> companions) {
+        this.companions = new ArrayList<>(companions);
     }
 }

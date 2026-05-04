@@ -10,8 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class RegisterPanel extends JPanel {
-    private JLabel usernameLabel, passwordLabel, confirmPasswordLabel;
-    private JTextField usernameField, passwordField, confirmPasswordField;
+   private JTextField usernameField, passwordField, confirmPasswordField;
     private JButton submitLoginCredentials;
     private JLabel titleBold, titlePlain, logoLabel;
 
@@ -21,11 +20,8 @@ public class RegisterPanel extends JPanel {
     private static final Color BUTTON_BG    = new Color(42, 68, 145);
     private static final Color FIELD_BORDER = new Color(180, 190, 220, 160);
     private static final Color TEXT_WHITE   = Color.WHITE;
-    private static final Color TEXT_MUTED   = new Color(200, 205, 225);
 
     private static final Font FONT_BOLD_LARGE  = new Font("SansSerif", Font.BOLD,  26);
-    private static final Font FONT_PLAIN_MED   = new Font("SansSerif", Font.PLAIN, 18);
-
 
 
     public RegisterPanel() {
@@ -213,4 +209,10 @@ public class RegisterPanel extends JPanel {
     }
 
     public String getConfirmPassword() { return confirmPasswordField.getText().trim(); }
+
+    public void clearFields() {
+        usernameField.setText("");
+        passwordField.setText("");
+        confirmPasswordField.setText("");
+    }
 }

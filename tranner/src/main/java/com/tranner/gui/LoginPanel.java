@@ -283,6 +283,11 @@ public class LoginPanel extends JPanel {
     // ── Public API (unchanged) ─────────────────────────────────────────────────
     public JButton getRegisterButton() { return registerButton; }
 
+    public void resetFields() {
+        loginUsernameField.setText("");
+        loginPasswordField.setText("");
+    }
+
     // Bonus getters in case the controller needs them
     public JButton getLoginButton()        { return loginButton; }
     public String getUsername()   { return loginUsernameField.getText().trim(); }
