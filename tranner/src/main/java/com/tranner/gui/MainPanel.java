@@ -22,17 +22,41 @@ public class MainPanel extends JPanel {
         MainPanel mainPanel = new MainPanel();
         TripPanel tripPanel = new TripPanel();
 
+        // + button → fresh TripPanel for a new trip
         mainPanel.getAddTripButton().addActionListener(e -> {
+            mainPanel.clearCurrentEditingTrip();
             tripPanel.reset();
             frame.setContentPane(tripPanel);
             frame.revalidate();
             frame.repaint();
+            // refresh map AFTER the panel is laid out and visible
+            javax.swing.Timer t = new javax.swing.Timer(200, ev -> tripPanel.getMapView().refresh());
+            t.setRepeats(false);
+            t.start();
         });
 
-        // Save Trip → build Itinerary, add card, go back, then fetch weather in background
+        // Card arrow → load that trip's data into TripPanel for editing
+        mainPanel.setTripOpenListener(trip -> {
+            tripPanel.loadItinerary(trip);
+            frame.setContentPane(tripPanel);
+            frame.revalidate();
+            frame.repaint();
+            javax.swing.Timer t = new javax.swing.Timer(200, ev -> tripPanel.getMapView().refresh());
+            t.setRepeats(false);
+            t.start();
+        });
+
+        // Save Trip 
         tripPanel.getSaveButton().addActionListener(e -> {
+            Itinerary editing = mainPanel.getCurrentEditingTrip();
             Itinerary it = tripPanel.buildItinerary(1);
-            mainPanel.addTrip(it);
+
+            if (editing == null) {
+                mainPanel.addTrip(it);
+            } else {
+                mainPanel.replaceTrip(editing, it);
+            }
+
             frame.setContentPane(mainPanel);
             frame.revalidate();
             frame.repaint();
@@ -52,6 +76,7 @@ public class MainPanel extends JPanel {
 
         // Back → return to MainPanel without saving
         tripPanel.getBackButton().addActionListener(e -> {
+            mainPanel.clearCurrentEditingTrip();
             frame.setContentPane(mainPanel);
             frame.revalidate();
             frame.repaint();
@@ -97,8 +122,15 @@ public class MainPanel extends JPanel {
     private final List<JButton> personEditButtons = new ArrayList<>();
     private final List<JButton> personDeleteButtons = new ArrayList<>();
     private final List<Itinerary> savedTrips = new ArrayList<>();
+    private Itinerary currentEditingTrip = null;
 
     private final List<Person> companions = new ArrayList<>();
+
+    public interface TripOpenListener {
+        void onTripOpened(Itinerary trip);
+    }
+    private TripOpenListener tripOpenListener;
+    public void setTripOpenListener(TripOpenListener l) { tripOpenListener = l; }
 
     public MainPanel() {
         setOpaque(false);
@@ -206,6 +238,14 @@ public class MainPanel extends JPanel {
             card.setBounds(0, y, listW - 8, 140);
             tripsListPanel.add(card);
             tripOpenButtons.add(card.getOpenButton());
+
+            // wire each card's arrow to open that specific trip for editing
+            final Itinerary tripRef = trip;
+            card.getOpenButton().addActionListener(e -> {
+                currentEditingTrip = tripRef;
+                if (tripOpenListener != null) tripOpenListener.onTripOpened(tripRef);
+            });
+
             y += 150;
         }
 
@@ -732,8 +772,19 @@ public class MainPanel extends JPanel {
 
     public void addTrip(Itinerary trip) {
         savedTrips.add(trip);
+        currentEditingTrip = null;
         buildLayout();
     }
+
+    public void replaceTrip(Itinerary old, Itinerary updated) {
+        int idx = savedTrips.indexOf(old);
+        if (idx >= 0) savedTrips.set(idx, updated);
+        currentEditingTrip = null;
+        buildLayout();
+    }
+
+    public Itinerary getCurrentEditingTrip() { return currentEditingTrip; }
+    public void clearCurrentEditingTrip()    { currentEditingTrip = null; }
 
     public void refreshTrips() {
         buildLayout();

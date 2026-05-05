@@ -71,6 +71,9 @@ public class MapViewClient extends JPanel{
     public void clearMarkers() {
         runJs("clearMarkers()");
     }
+    public void refresh() {
+        runJs("refreshMap()");
+    }
     public void drawRoute(List<String> points) {
         StringBuilder json = new StringBuilder("[");
         for (int i = 0; i < points.size(); i++) {

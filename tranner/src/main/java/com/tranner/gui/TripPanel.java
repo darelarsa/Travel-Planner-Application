@@ -391,6 +391,12 @@ public class TripPanel extends JPanel {
         LocalDate getRangeStart() { return rangeStart; }
         LocalDate getRangeEnd()   { return rangeEnd; }
         void reset() { rangeStart = null; rangeEnd = null; displayMonth = YearMonth.now(); repaint(); }
+        void setRange(LocalDate start, LocalDate end) {
+            rangeStart = start;
+            rangeEnd   = end;
+            if (start != null) displayMonth = YearMonth.from(start);
+            repaint();
+        }
 
         private void handleClick(int mx, int my) {
             if (my < HEADER_H) {
@@ -1066,6 +1072,21 @@ public class TripPanel extends JPanel {
     }
 
     public void setTripName(String name) { tripNameField.setText(name); }
+
+    /**
+     * Pre-fills TripPanel with an existing Itinerary so the user can edit it.
+     * Call this instead of reset() when opening a saved trip for editing.
+     */
+    public void loadItinerary(Itinerary it) {
+        reset();
+        setTripName(it.getTripName());
+        calendar.setRange(it.getStartDate(), it.getEndDate());
+        for (Attraction a : it.getAttractions()) {
+            attractionMap.put(a.getName(), a);
+            itineraryAttractions.add(a.getName());
+        }
+        itineraryPanel.refresh();
+    }
 
     /** Clears all state so TripPanel is fresh for a new trip. */
     public void reset() {
