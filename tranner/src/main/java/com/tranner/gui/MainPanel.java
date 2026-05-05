@@ -22,28 +22,27 @@ public class MainPanel extends JPanel {
         MainPanel mainPanel = new MainPanel();
         TripPanel tripPanel = new TripPanel();
 
-        // + button → fresh TripPanel for a new trip
+        // Use CardLayout so both panels stay in the hierarchy at all times.
+        JPanel root = new JPanel(new CardLayout());
+        root.add(mainPanel, "main");
+        root.add(tripPanel, "trip");
+        CardLayout cl = (CardLayout) root.getLayout();
+
+        // Helper lambdas for switching
+        Runnable showMain = () -> { cl.show(root, "main"); root.revalidate(); root.repaint(); };
+        Runnable showTrip = () -> { cl.show(root, "trip"); root.revalidate(); root.repaint(); };
+
+        
         mainPanel.getAddTripButton().addActionListener(e -> {
             mainPanel.clearCurrentEditingTrip();
             tripPanel.reset();
-            frame.setContentPane(tripPanel);
-            frame.revalidate();
-            frame.repaint();
-            // refresh map AFTER the panel is laid out and visible
-            javax.swing.Timer t = new javax.swing.Timer(200, ev -> tripPanel.getMapView().refresh());
-            t.setRepeats(false);
-            t.start();
+            showTrip.run();
         });
 
-        // Card arrow → load that trip's data into TripPanel for editing
+        // Card arrow 
         mainPanel.setTripOpenListener(trip -> {
             tripPanel.loadItinerary(trip);
-            frame.setContentPane(tripPanel);
-            frame.revalidate();
-            frame.repaint();
-            javax.swing.Timer t = new javax.swing.Timer(200, ev -> tripPanel.getMapView().refresh());
-            t.setRepeats(false);
-            t.start();
+            showTrip.run();
         });
 
         // Save Trip 
@@ -57,9 +56,7 @@ public class MainPanel extends JPanel {
                 mainPanel.replaceTrip(editing, it);
             }
 
-            frame.setContentPane(mainPanel);
-            frame.revalidate();
-            frame.repaint();
+            showMain.run();
 
             String city = tripPanel.getSearchedCity();
             if (!city.isEmpty()) {
@@ -77,12 +74,10 @@ public class MainPanel extends JPanel {
         // Back → return to MainPanel without saving
         tripPanel.getBackButton().addActionListener(e -> {
             mainPanel.clearCurrentEditingTrip();
-            frame.setContentPane(mainPanel);
-            frame.revalidate();
-            frame.repaint();
+            showMain.run();
         });
 
-        frame.add(mainPanel);
+        frame.setContentPane(root);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

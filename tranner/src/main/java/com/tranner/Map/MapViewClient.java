@@ -23,6 +23,19 @@ public class MapViewClient extends JPanel{
         add(fxPanel, BorderLayout.CENTER);
         connector = new JavaConnector();
         Platform.runLater(this::iniWebView);
+
+        /* map can be re-load. JAVAFX re-parenting */
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & java.awt.event.HierarchyEvent.SHOWING_CHANGED) != 0
+                    && isShowing()) {
+                javax.swing.Timer t = new javax.swing.Timer(150, ev -> {
+                    fxPanel.repaint();   // forces JFXPanel to repaint itself
+                    refresh();           // tells Leaflet to remeasure
+                });
+                t.setRepeats(false);
+                t.start();
+            }
+        });
     }
 
     private void iniWebView(){
