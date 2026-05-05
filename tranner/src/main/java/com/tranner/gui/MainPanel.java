@@ -23,6 +23,7 @@ public class MainPanel extends JPanel {
         TripPanel tripPanel = new TripPanel();
 
         mainPanel.getAddTripButton().addActionListener(e -> {
+            tripPanel.reset();
             frame.setContentPane(tripPanel);
             frame.revalidate();
             frame.repaint();
@@ -97,7 +98,7 @@ public class MainPanel extends JPanel {
     private final List<JButton> personDeleteButtons = new ArrayList<>();
     private final List<Itinerary> savedTrips = new ArrayList<>();
 
-    private List<Person> companions;
+    private final List<Person> companions = new ArrayList<>();
 
     public MainPanel() {
         setOpaque(false);
@@ -747,6 +748,8 @@ public class MainPanel extends JPanel {
     }
 
     public void setCompanions(List<Person> companions) {
-        this.companions = new ArrayList<>(companions);
+        this.companions.clear();
+        this.companions.addAll(companions);
+        buildLayout();
     }
 }

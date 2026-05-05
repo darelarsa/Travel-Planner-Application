@@ -390,6 +390,7 @@ public class TripPanel extends JPanel {
         void setRangeListener(RangeListener l) { this.rangeListener = l; }
         LocalDate getRangeStart() { return rangeStart; }
         LocalDate getRangeEnd()   { return rangeEnd; }
+        void reset() { rangeStart = null; rangeEnd = null; displayMonth = YearMonth.now(); repaint(); }
 
         private void handleClick(int mx, int my) {
             if (my < HEADER_H) {
@@ -532,6 +533,7 @@ public class TripPanel extends JPanel {
 
         void setChangeListener(Runnable r) { changeListener = r; }
         Set<String> getSelected() { return selected; }
+        void clearAll() { selected.clear(); repaint(); }
 
         @Override public void setBounds(int x, int y, int w, int h) {
             headerH = h;
@@ -742,6 +744,7 @@ public class TripPanel extends JPanel {
             repaint();
         }
         void setAddListener(Runnable r)         { addListener = r; }
+        void reset() { name = null; type = null; rating = 0; description = null; address = null; price = 0; repaint(); }
 
         @Override protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -1063,6 +1066,24 @@ public class TripPanel extends JPanel {
     }
 
     public void setTripName(String name) { tripNameField.setText(name); }
+
+    /** Clears all state so TripPanel is fresh for a new trip. */
+    public void reset() {
+        selectedAttractionName = null;
+        selectedAttractionType = null;
+        currentCity = "";
+        itineraryAttractions.clear();
+        attractionMap.clear();
+
+        tripNameField.setText("");
+        searchField.setText("");
+        calendar.reset();
+        companionsDropdown.clearAll();
+        attractionPanel.reset();
+        mapView.clearMarkers();
+        itineraryPanel.refresh();
+        repaint();
+    }
 
     /**
      Call companions???
