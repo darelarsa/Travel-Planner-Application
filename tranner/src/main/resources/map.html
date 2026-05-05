@@ -61,6 +61,10 @@
         markers.forEach(m => map.removeLayer(m));
         markers = [];
     }
+
+    function refreshMap() {
+        map.invalidateSize();
+    }
 </script>
 </body>
 </html>
